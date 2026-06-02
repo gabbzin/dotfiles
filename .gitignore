@@ -1,0 +1,41 @@
+# ==========================================
+# .gitignore para Repositório de Dotfiles
+# ==========================================
+
+# 1. Ignorar lixos de compilação e pacotes (o seu caso kkkk)
+**/node_modules/
+**/dist/
+**/build/
+**/.npm/
+npm-debug.log*
+yarn-error.log*
+
+# 2. Bloquear arquivos de cache e estado de IDEs
+**/.cache/
+**/.vscode/
+**/.idea/
+**/.wakatime/
+
+# 3. Barreira de segurança contra credenciais acidentais
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*_rsa
+**/*_rsa.pub
+**/secrets.json
+**/credentials/
+
+# 4. Lixo de Sistema Operacional (útil se você plugar pendrives)
+**/.DS_Store
+**/Thumbs.db
+
+# Lixos e caches internos do VSCode
+**/Code/User/workspaceStorage/
+**/Code/User/History/
+**/Code/User/globalStorage/
+**/Code/User/Backups/
+
+# Ignorar lixos dinâmicos do Fish
+**/fish/.config/fish/completions/
+**/fish/.config/fish/fish_variables

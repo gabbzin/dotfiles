@@ -1,0 +1,83 @@
+{
+  // --- Interface e Experiência Visual ---
+  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.iconTheme": "material-icon-theme",
+  "material-icon-theme.activeIconPack": "nest",
+  "material-icon-theme.folders.theme": "specific",
+  "workbench.activityBar.location": "top",
+  "workbench.activityBar.iconClickBehavior": "toggle",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "workbench.editor.enablePreviewFromCodeNavigation": true,
+  "workbench.editor.focusRecentEditorAfterClose": false,
+  "explorer.compactFolders": false,
+  "explorer.confirmDragAndDrop": false,
+  "animations.Install-Method": "Apc Customize UI++",
+  "frosted-glass-theme.fakeMica.enabled": true,
+  // --- Editor e Escrita ---
+  "editor.fontFamily": "Consolas, monospace",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
+  },
+  "editor.semanticHighlighting.enabled": true,
+  // --- Terminal (Ajustado para seu Fedora + Kitty) ---
+  "terminal.integrated.fontFamily": "CaskaydiaCove NF",
+  "terminal.external.linuxExec": "kitty",
+  "code-runner.runInTerminal": true,
+  // --- Sistema de Arquivos e Salvamento ---
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 500,
+  "search.followSymlinks": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "files.watcherExclude": {
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  // --- Git e Controle de Versão ---
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.enableStatusBarSync": true,
+  // --- Inteligência Artificial (Copilot / GitLens / Chat) ---
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  "gitlens.ai.model": "gemini:gemini-2.5-flash",
+  "chat.mcp.gallery.enabled": true,
+  // --- Outros ---
+  "telemetry.telemetryLevel": "off",
+  "redhat.telemetry.enabled": false,
+  "window.newWindowProfile": "Gabriel P. Geral",
+  "python.defaultInterpreterPath": "/bin/python",
+  "json.schemaDownload.trustedDomains": {
+    "https://schemastore.azurewebsites.net/": true,
+    "https://raw.githubusercontent.com/": true,
+    "https://www.schemastore.org/": true,
+    "https://json.schemastore.org/": true,
+    "https://json-schema.org/": true,
+    "https://biomejs.dev": true
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "biome.suggestInstallingGlobally": false,
+  "resmon.show.battery": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "chat.viewSessions.orientation": "stacked",
+  "docker.extension.enableComposeLanguageServer": false,
+  "chat.tools.terminal.autoApprove": {
+    "pnpm": true
+  }
+}

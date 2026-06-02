@@ -1,0 +1,60 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    },
+  },
+  {
+    "bindings": {
+      "ctrl-w": "pane::CloseActiveItem",
+    },
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-n": "project_panel::NewFile",
+    },
+  },
+  // Comentar linha
+  {
+    "bindings": {
+      "ctrl-;": "editor::ToggleComments",
+    },
+  },
+
+  // Multi cursor
+  {
+    "bindings": {
+      "ctrl-alt-up": "editor::AddSelectionAbove",
+      "ctrl-alt-down": "editor::AddSelectionBelow",
+    },
+  },
+
+  // Duplicar linha
+  {
+    "bindings": {
+      "shift-alt-up": "editor::DuplicateLineUp",
+      "shift-alt-down": "editor::DuplicateLineDown",
+    },
+  },
+  {
+    "bindings": {
+      "ctrl-shift-up": "editor::SelectUp",
+      "ctrl-shift-down": "editor::SelectDown"
+    }
+  }
+]
