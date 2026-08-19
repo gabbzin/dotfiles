@@ -81,4 +81,9 @@
   "terminal.integrated.fontSize": 12,
   "editor.fontSize": 13,
   "chat.viewSessions.orientation": "stacked",
+  // --- Lua (Hyprland config) ---
+  "[lua]": {
+    "editor.defaultFormatter": "johnnymorganz.stylua",
+    "editor.formatOnSave": true
+  },
 }
