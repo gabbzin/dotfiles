@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Connections
+Exec=gnome-connections %U
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Utility;RemoteAccess;Network;
+Keywords=vnc;rdp;remote;desktop;windows;support;access;view
+StartupNotify=true
+Icon=org.gnome.Connections
+DBusActivatable=true
+MimeType=application/x-vnc
+NotShowIn=Hyprland;
