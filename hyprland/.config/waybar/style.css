@@ -1,0 +1,62 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "CaskaydiaCove Nerd Font";
+  font-size: 13px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(30, 30, 46, 0.92);
+  color: #cdd6f4;
+}
+
+tooltip {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  color: #cdd6f4;
+}
+
+#workspaces button {
+  padding: 0 6px;
+  color: #6c7086;
+}
+
+#workspaces button.active {
+  color: #89b4fa;
+  background: #313244;
+}
+
+#workspaces button:hover {
+  background: #45475a;
+}
+
+#clock,
+#cpu,
+#memory,
+#network,
+#pulseaudio,
+#tray {
+  padding: 0 8px;
+  margin: 0 2px;
+}
+
+#network {
+  color: #a6e3a1;
+}
+
+#pulseaudio {
+  color: #f9e2af;
+}
+
+#cpu {
+  color: #89b4fa;
+}
+
+#memory {
+  color: #cba6f7;
+}
+
+#clock {
+  color: #cdd6f4;
+}

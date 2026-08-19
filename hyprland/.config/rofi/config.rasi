@@ -1,0 +1,42 @@
+configuration {
+  modi: "drun";
+  show-icons: true;
+  font: "CaskaydiaCove Nerd Font 12";
+  drun-display-format: "{icon} {name}";
+  display-drun: "  Apps  ";
+}
+
+window {
+  width: 600px;
+  border-radius: 12px;
+  background-color: #1e1e2e;
+  border: 2px;
+  border-color: #89b4fa;
+}
+
+inputbar {
+  background-color: transparent;
+  text-color: #cdd6f4;
+  padding: 8px;
+  children: [ prompt, entry ];
+}
+
+listview {
+  lines: 8;
+  padding: 4px;
+}
+
+element {
+  padding: 6px;
+  text-color: #cdd6f4;
+}
+
+element selected {
+  background-color: #313244;
+  text-color: #89b4fa;
+  border-radius: 8px;
+}
+
+element-text {
+  vertical-align: 0.5;
+}
