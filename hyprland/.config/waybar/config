@@ -15,27 +15,27 @@
     "max-length": 60
   },
   "network": {
-    "format-wifi": "{essid}  {signalStrength}%",
-    "format-ethernet": "{ifname}",
+    "format-wifi": "\uf1eb {essid} {signalStrength}%",
+    "format-ethernet": "\uf0c1 {ifname}",
     "format-disconnected": "Disconnected",
     "tooltip-format": "{ifname}: {ipaddr}"
   },
   "pulseaudio": {
     "format": "{icon} {volume}%",
-    "format-muted": "Muted",
+    "format-muted": "{icon} Muted",
     "format-icons": {
-      "default": ["", ""]
+      "default": ["\uf026", "\uf027", "\uf028"]
     },
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
   },
   "cpu": {
-    "format": "{usage}%"
+    "format": "\uf2db {usage}%"
   },
   "memory": {
-    "format": "{}%"
+    "format": "\uf538 {}%"
   },
   "clock": {
-    "format": "{:%H:%M}",
+    "format": "\uf017 {:%H:%M}",
     "format-alt": "{:%Y-%m-%d}",
     "tooltip-format": "{:%A, %d de %B de %Y}"
   },
