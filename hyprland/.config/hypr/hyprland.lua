@@ -1,0 +1,6 @@
+require("modules.colors")
+require("modules.settings")
+require("modules.monitors")
+require("modules.autostart")
+require("modules.keybinds")
+require("modules.rules")
