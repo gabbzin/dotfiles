@@ -113,7 +113,7 @@
   "workbench.editor.enablePreviewFromQuickOpen": false,
   "chat.mcp.gallery.enabled": true,
   "frosted-glass-theme.fakeMica.enabled": true,
-  "editor.fontFamily": "Consolas, 'monospace', monospace",
+  "editor.fontFamily": "'Cascadia Code', 'monospace', monospace",
   "gitlens.launchpad.indicator.enabled": false,
   "search.followSymlinks": false,
   "git.autofetch": true,
@@ -138,4 +138,16 @@
     "https://ui.shadcn.com": true,
   },
   "chat.viewSessions.orientation": "stacked",
+  "dotfiles.targetPath": "",
+  "editor.fontSize": 13,
+  "terminal.integrated.fontSize": 12,
+  "yaml.disableSchemaDetection": [
+    "**/.github/workflows/*.yml",
+    "**/.github/workflows/*.yaml",
+    "**/.gitea/workflows/*.yml",
+    "**/.gitea/workflows/*.yaml",
+    "**/.forgejo/workflows/*.yml",
+    "**/.forgejo/workflows/*.yaml"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
 }

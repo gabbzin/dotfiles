@@ -16,7 +16,7 @@
   "animations.Install-Method": "Apc Customize UI++",
   "frosted-glass-theme.fakeMica.enabled": true,
   // --- Editor e Escrita ---
-  "editor.fontFamily": "Consolas, monospace",
+  "editor.fontFamily": "'Cascadia Code', monospace",
   "editor.tabSize": 2,
   "editor.wordWrap": "on",
   "editor.guides.bracketPairs": true,
@@ -72,12 +72,13 @@
   },
   "editor.defaultFormatter": "biomejs.biome",
   "biome.suggestInstallingGlobally": false,
-  "resmon.show.battery": false,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "chat.viewSessions.orientation": "stacked",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
   "docker.extension.enableComposeLanguageServer": false,
   "chat.tools.terminal.autoApprove": {
     "pnpm": true
-  }
+  },
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontSize": 12,
+  "editor.fontSize": 13,
+  "chat.viewSessions.orientation": "stacked",
 }

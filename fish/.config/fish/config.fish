@@ -32,6 +32,9 @@ alias genact="docker run --rm -it hacker-genact"
 alias start-sshd="echo 'Iniciando o sshd meu nobre😶‍'; sudo systemctl start sshd"
 alias stop-sshd="echo 'Encerrando o sshd meu nobre😶‍'; sudo systemctl stop sshd"
 
+# --- Git & GitHub ---
+alias gdash="echo 'Abrindo seu dashboard!'; gh dash"
+
 # pnpm
 set -gx PNPM_HOME "/home/gab/.local/share/pnpm"
 if not string match -q -- "$PNPM_HOME/bin" $PATH
@@ -50,3 +53,13 @@ if test -d $HOME/flutter/bin
     fish_add_path $HOME/flutter/bin
 end
 
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/gab/.local/bin" $PATH
+~/.local/bin/mise activate fish | source
+~/.local/bin/mise activate fish | source
+~/.local/bin/mise activate fish | source
+
+# Rover (Graphql)
+set -gx PATH "/home/gab/.rover/bin" $PATH

@@ -24,7 +24,7 @@
     },
   },
   {
-    "context": "Editor",
+    // "context": "global",
     "bindings": {
       "ctrl-n": "project_panel::NewFile",
     },
@@ -54,7 +54,19 @@
   {
     "bindings": {
       "ctrl-shift-up": "editor::SelectUp",
-      "ctrl-shift-down": "editor::SelectDown"
-    }
-  }
+      "ctrl-shift-down": "editor::SelectDown",
+    },
+  },
+  {
+    "context": "Editor && mode == editing",
+    "bindings": {
+      "ctrl-space": "editor::ShowCompletions",
+    },
+  },
+  {
+    "context": "Editor && mode == editing",
+    "bindings": {
+      "ctrl-d": "editor::SelectNext",
+    },
+  },
 ]

@@ -1,0 +1,26 @@
+map ctrl+backspace send_text all \x17
+
+shell /usr/bin/fish
+# Desativando saudação
+set -g fish_greeting ""
+
+# BEGIN_KITTY_THEME
+# Cherry Midnight
+include current-theme.conf
+# END_KITTY_THEME
+
+# TEMA
+
+font_family      Caskaydia Cove NF
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+font_size        12.0
+
+initial_window_width  75c
+initial_window_height 25c
+
+allow_remote_control socket-only
+
+draw_minimal_borders yes
+linux
