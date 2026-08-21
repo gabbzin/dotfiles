@@ -37,6 +37,10 @@ end
 hl.bind(mod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
+-- Trocar workspace usando Super + Alt + seta para esquerda/direita.
+hl.bind(mod .. " + ALT + left", hl.dsp.focus({ workspace = "e-1" }))
+hl.bind(mod .. " + ALT + right", hl.dsp.focus({ workspace = "e+1" }))
+
 -- 272 = botão esquerdo, 273 = botão direito (códigos X11).
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })

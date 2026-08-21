@@ -5,7 +5,7 @@ if #monitors == 0 then
 		output = "", -- aplicar em qualquer monitor
 		mode = "preferred", -- resolução/refresh nativos do monitor
 		position = "auto",
-		scale = "auto",
+		scale = "1.0",
 	})
 	return
 end
@@ -15,6 +15,6 @@ for _, monitor in ipairs(monitors) do
 		output = monitor.name,
 		mode = "preferred",
 		position = "auto",
-		scale = "auto",
+		scale = "1.0",
 	})
 end
