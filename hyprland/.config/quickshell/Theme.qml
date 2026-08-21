@@ -38,8 +38,8 @@ Singleton {
     readonly property color hoverOverlay: "#31324488" // overlay sutil para hover states
 
     // ── Tipografia ──
-    readonly property string fontFamily: "JetBrainsMono Nerd Font"
-    readonly property string fontFamilyMono: "JetBrainsMono Nerd Font Mono"
+    readonly property string fontFamily: "CaskaydiaCove Nerd Font"
+    readonly property string fontFamilyMono: "CaskaydiaCove Nerd Font Mono"
     readonly property int fontSizeSmall: 11
     readonly property int fontSizeNormal: 13
     readonly property int fontSizeLarge: 14
