@@ -11,4 +11,8 @@ ShellRoot {
         active: true
         source: "modules/bar/Bar.qml"
     }
+    Loader {
+        active: true
+        source: "modules/osd/Osd.qml"
+    }
 }

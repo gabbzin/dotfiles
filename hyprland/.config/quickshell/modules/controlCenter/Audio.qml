@@ -11,7 +11,8 @@ ColumnLayout {
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool ready: Pipewire.ready && sink !== null && sink.audio !== null
     readonly property bool muted: ready ? sink.audio.muted : false
-    readonly property real volume: ready ? sink.audio.volume : 0
+    readonly property real volume: ready && isFinite(sink.audio.volume) ? sink.audio.volume : 0
+    readonly property int volumePercent: Math.round(volume * 100)
 
     RowLayout {
         Layout.fillWidth: true
@@ -39,7 +40,7 @@ ColumnLayout {
         }
         Item { Layout.fillWidth: true }
         Text {
-            text: root.ready ? Math.round(root.volume * 100) + "%" : "—"
+            text: root.ready ? root.volumePercent + "%" : "—"
             color: Theme.subtext0
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSizeSmall

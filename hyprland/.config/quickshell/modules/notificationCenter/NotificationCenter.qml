@@ -23,7 +23,14 @@ PopupWindow {
 
     // DND state — persistente via PersistentProperties futuramente
     property bool dndEnabled: false
-    readonly property int notifCount: NotificationServer.trackedNotifications ? NotificationServer.trackedNotifications.values.length : 0
+    readonly property int notifCount: {
+        const t = NotificationServer && NotificationServer.trackedNotifications;
+        if (!t) return 0;
+        if (t.values) {
+            try { return Array.from(t.values).length; } catch(e) { return t.values.length ?? 0; }
+        }
+        return t.length ?? t.size ?? t.count ?? 0;
+    }
     // Histórico em memória — NotificationServer.trackedNotifications já persiste se keepOnReload true
     // Vamos usar trackedNotifications como fonte principal
 
@@ -106,7 +113,7 @@ PopupWindow {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             // dismiss all tracked
-                            if (NotificationServer.trackedNotifications) {
+                            if (NotificationServer && NotificationServer.trackedNotifications) {
                                 for (const n of NotificationServer.trackedNotifications.values) {
                                     n.dismiss();
                                 }
@@ -170,7 +177,7 @@ PopupWindow {
                     }
 
                     Repeater {
-                        model: NotificationServer.trackedNotifications
+                        model: NotificationServer && NotificationServer.trackedNotifications ? NotificationServer.trackedNotifications : []
                         delegate: NotificationItem {
                             notification: modelData
                             Layout.fillWidth: true

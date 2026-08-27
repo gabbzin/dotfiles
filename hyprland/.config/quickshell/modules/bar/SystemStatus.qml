@@ -53,7 +53,10 @@ RowLayout {
     // ── Áudio ──
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool audioMuted: sink && sink.audio ? sink.audio.muted : false
-    readonly property int audioVolume: sink && sink.audio ? Math.round(sink.audio.volume * 100) : 0
+    readonly property int audioVolume: {
+        if (!sink || !sink.audio || !isFinite(sink.audio.volume)) return 0;
+        return Math.round(sink.audio.volume * 100);
+    }
 
     // Ícones — compactos, Nerd Font
     Text {
@@ -114,8 +117,15 @@ RowLayout {
         visible: root.batteryReady
     }
 
-    // Notificação — contagem via NotificationServer
-    readonly property int notifCount: NotificationServer.trackedNotifications ? NotificationServer.trackedNotifications.values.length : 0
+    // Notificação — contagem via NotificationServer (robusta para Map/array/undefined)
+    readonly property int notifCount: {
+        const t = NotificationServer && NotificationServer.trackedNotifications;
+        if (!t) return 0;
+        if (t.values) {
+            try { return Array.from(t.values).length; } catch(e) { return t.values.length ?? 0; }
+        }
+        return t.length ?? t.size ?? t.count ?? 0;
+    }
     Item {
         Layout.alignment: Qt.AlignVCenter
         implicitWidth: notifRow.implicitWidth
