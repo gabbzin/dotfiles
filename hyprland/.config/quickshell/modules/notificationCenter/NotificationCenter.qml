@@ -42,7 +42,7 @@ PopupWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.bgAlt
+        color: "transparent"
         radius: Theme.radiusM
         border.color: Theme.barBorder
         border.width: 1

@@ -8,17 +8,18 @@ import qs
 
 PanelWindow {
     id: root
-    // OSD flutuante centralizado na parte inferior
+    // OSD flutuante centralizado na parte inferior — overlay, não rouba foco
     anchors {
         bottom: true
     }
     margins {
         bottom: 80
     }
-    // Não reserva espaço — overlay (não rouba foco do ControlCenter)
     exclusionMode: ExclusionMode.Ignore
-    aboveWindows: false
+    aboveWindows: true
     color: "transparent"
+    // sempre visível como layer, controla conteúdo via visibleOsd/opacity
+    visible: true
 
     PwObjectTracker { objects: [Pipewire.defaultAudioSink] }
 
@@ -30,8 +31,7 @@ PanelWindow {
     property bool visibleOsd: false
 
     implicitWidth: 380
-    implicitHeight: visibleOsd ? 72 : 0
-    visible: visibleOsd
+    implicitHeight: 72
 
     // timer hide
     Timer {
@@ -106,7 +106,6 @@ PanelWindow {
                 const val = parseInt(text.trim());
                 if (isNaN(val)) return;
                 brightnessPollProc._val = val;
-                maxProc._show = brightnessPollProc._show;
                 maxProc.running = true;
             }
         }
@@ -114,18 +113,20 @@ PanelWindow {
     Process {
         id: maxProc
         command: ["brightnessctl", "m"]
-        property bool _show: true
         stdout: StdioCollector {
             onStreamFinished: {
                 const max = parseInt(text.trim());
                 if (isNaN(max) || max <= 0) return;
                 const val = brightnessPollProc._val;
+                const show = brightnessPollProc._show;
                 const p = Math.round((val / max) * 100);
-                if (p !== root.lastBrightness) {
-                    if (_show && root.lastBrightness !== -1) root.showBrightness(p);
+                if (root.lastBrightness === -1) {
                     root.lastBrightness = p;
                     root.brightnessPercent = p;
-                } else if (root.lastBrightness === -1) {
+                    return;
+                }
+                if (p !== root.lastBrightness) {
+                    if (show) root.showBrightness(p);
                     root.lastBrightness = p;
                     root.brightnessPercent = p;
                 }
@@ -207,4 +208,3 @@ PanelWindow {
         // inicializa sem mostrar
         brightnessPollProc.running = true;
     }
-}
