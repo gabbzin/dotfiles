@@ -99,7 +99,13 @@ PanelWindow {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: root.controlCenterOpen = !root.controlCenterOpen
+                onClicked: {
+                    if (root.controlCenterOpen) root.controlCenterOpen = false
+                    else {
+                        root.controlCenterOpen = true
+                        root.notificationCenterOpen = false
+                    }
+                }
             }
         }
     }
@@ -118,10 +124,6 @@ PanelWindow {
         id: controlCenter
         barWindow: root
         isOpen: root.controlCenterOpen
-        onIsOpenChanged: {
-            root.controlCenterOpen = isOpen
-            if (isOpen) root.notificationCenterOpen = false
-        }
     }
 
     // ── Notification Center (PopupWindow ancorado) ──
@@ -129,9 +131,5 @@ PanelWindow {
         id: notificationCenter
         barWindow: root
         isOpen: root.notificationCenterOpen
-        onIsOpenChanged: {
-            root.notificationCenterOpen = isOpen
-            if (isOpen) root.controlCenterOpen = false
-        }
     }
 }

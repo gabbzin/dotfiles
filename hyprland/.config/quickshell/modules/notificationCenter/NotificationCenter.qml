@@ -37,7 +37,7 @@ PopupWindow {
     HyprlandFocusGrab {
         windows: [root]
         active: root.isOpen
-        onCleared: root.isOpen = false
+        onCleared: barWindow.notificationCenterOpen = false
     }
 
     Rectangle {
@@ -132,7 +132,7 @@ PopupWindow {
                         anchors.fill: parent
                         anchors.margins: -8
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.isOpen = false
+                        onClicked: barWindow.notificationCenterOpen = false
                     }
                 }
             }

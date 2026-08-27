@@ -8,6 +8,8 @@ ColumnLayout {
     spacing: Theme.spacingS
     Layout.fillWidth: true
 
+    PwObjectTracker { objects: [Pipewire.defaultAudioSink] }
+
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool ready: Pipewire.ready && sink !== null && sink.audio !== null
     readonly property bool muted: ready ? sink.audio.muted : false

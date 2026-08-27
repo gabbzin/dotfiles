@@ -11,6 +11,7 @@ import qs
 RowLayout {
     id: root
     spacing: Theme.spacingS
+    PwObjectTracker { objects: [Pipewire.defaultAudioSink] }
 
     // ── Wi-Fi / Ethernet ──
     readonly property var wifiDevice: {

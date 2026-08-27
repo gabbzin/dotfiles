@@ -15,10 +15,12 @@ PanelWindow {
     margins {
         bottom: 80
     }
-    // Não reserva espaço — overlay
+    // Não reserva espaço — overlay (não rouba foco do ControlCenter)
     exclusionMode: ExclusionMode.Ignore
-    aboveWindows: true
+    aboveWindows: false
     color: "transparent"
+
+    PwObjectTracker { objects: [Pipewire.defaultAudioSink] }
 
     // estado
     property string mode: "volume" // "volume" | "brightness"

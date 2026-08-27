@@ -16,10 +16,10 @@ PopupWindow {
     // anchor.window é obrigatório para o popup aparecer
     anchor.window: barWindow
     // posicionamento: canto superior direito, abaixo da barra + gap
-    anchor.rect.x: barWindow.width - width - 12
+    anchor.rect.x: barWindow.width - implicitWidth - 12
     anchor.rect.y: barWindow.height + 8
-    anchor.rect.width: width
-    anchor.rect.height: height
+    anchor.rect.width: implicitWidth
+    anchor.rect.height: implicitHeight
 
     implicitWidth: 380
     implicitHeight: 520
@@ -31,7 +31,7 @@ PopupWindow {
         id: focusGrab
         windows: [root]
         active: root.isOpen
-        onCleared: root.isOpen = false
+        onCleared: barWindow.controlCenterOpen = false
     }
 
     // ── Container visual ──
@@ -76,7 +76,7 @@ PopupWindow {
                         anchors.fill: parent
                         anchors.margins: -8
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.isOpen = false
+                        onClicked: barWindow.controlCenterOpen = false
                     }
                 }
             }
@@ -85,11 +85,21 @@ PopupWindow {
 
             // ── Conteúdo real — Fase 3 completa ──
             Flickable {
+                id: ccFlick
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 contentHeight: ccContent.implicitHeight
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
+                interactive: false
+                WheelHandler {
+                    onWheel: event => {
+                        const step = 40;
+                        if (event.angleDelta.y > 0) ccFlick.contentY = Math.max(0, ccFlick.contentY - step);
+                        else ccFlick.contentY = Math.min(ccFlick.contentHeight - ccFlick.height, ccFlick.contentY + step);
+                        event.accepted = true;
+                    }
+                }
 
                 ColumnLayout {
                     id: ccContent
@@ -132,7 +142,7 @@ PopupWindow {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                root.isOpen = false
+                                barWindow.controlCenterOpen = false
                                 root.barWindow.notificationCenterOpen = true
                             }
                         }
