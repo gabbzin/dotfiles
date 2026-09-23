@@ -150,4 +150,5 @@
     "**/.forgejo/workflows/*.yaml"
   ],
   "python.analysis.typeCheckingMode": "basic",
+  "biome.suggestInstallingGlobally": false,
 }

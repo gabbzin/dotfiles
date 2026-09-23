@@ -3,7 +3,6 @@ if set -q VSCODE_IPC_HOOK_CLI
     exit
 end
 
-
 if status is-interactive
     # Commands to run in interactive sessions can go here
 end
@@ -35,30 +34,29 @@ alias stop-sshd="echo 'Encerrando o sshd meu nobre😶‍'; sudo systemctl stop 
 # --- Git & GitHub ---
 alias gdash="echo 'Abrindo seu dashboard!'; gh dash"
 
-# pnpm
-set -gx PNPM_HOME "/home/gab/.local/share/pnpm"
-if not string match -q -- "$PNPM_HOME/bin" $PATH
-  set -gx PATH "$PNPM_HOME/bin" $PATH
-end
-# pnpm end
-
-
 # Garantir PATH básico do sistema (Fedora)
 if not contains /usr/bin $PATH
     set -gx PATH /usr/local/bin /usr/bin /bin /usr/sbin /sbin
 end
+
+# Pnpm
+
+set -Ux PNPM_HOME "$HOME/.local/share/pnpm"
+fish_add_path "$PNPM_HOME"
 
 # Flutter
 if test -d $HOME/flutter/bin
     fish_add_path $HOME/flutter/bin
 end
 
+# Android Studio
 
+set -Ux ANDROID_HOME $HOME/Android/Sdk
+fish_add_path $ANDROID_HOME/cmdline-tools/latest/bin
+fish_add_path $ANDROID_HOME/platform-tools
 
-# Added by Antigravity CLI installer
+# Mise
 set -gx PATH "/home/gab/.local/bin" $PATH
-~/.local/bin/mise activate fish | source
-~/.local/bin/mise activate fish | source
 ~/.local/bin/mise activate fish | source
 
 # Rover (Graphql)

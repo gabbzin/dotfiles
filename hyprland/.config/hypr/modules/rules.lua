@@ -35,3 +35,10 @@ hl.gesture({
 	direction = "horizontal",
 	action = "workspace",
 })
+
+hl.window_rule({
+  name = "float-file-chooser",
+  match = { class = "code", title = "Abrir a Pasta" },
+  float = true,
+  size = { 900, 500 },
+})
