@@ -1,53 +1,41 @@
 {
-  // --- Interface e Experiência Visual ---
+  // --- Interface (mínimo: tema + ícones) ---
   "workbench.colorTheme": "GitHub Dark Default",
   "workbench.iconTheme": "material-icon-theme",
   "material-icon-theme.activeIconPack": "nest",
   "material-icon-theme.folders.theme": "specific",
   "workbench.activityBar.location": "top",
-  "workbench.activityBar.iconClickBehavior": "toggle",
-  "workbench.editor.empty.hint": "hidden",
-  "workbench.editor.enablePreview": false,
-  "workbench.editor.enablePreviewFromQuickOpen": true,
-  "workbench.editor.enablePreviewFromCodeNavigation": true,
-  "workbench.editor.focusRecentEditorAfterClose": false,
-  "explorer.compactFolders": false,
-  "explorer.confirmDragAndDrop": false,
-  "animations.Install-Method": "Apc Customize UI++",
-  "frosted-glass-theme.fakeMica.enabled": true,
-  // --- Editor e Escrita ---
+  // --- Editor ---
   "editor.fontFamily": "'Cascadia Code', monospace",
+  "editor.fontSize": 13,
+  "editor.fontLigatures": true,
   "editor.tabSize": 2,
   "editor.wordWrap": "on",
-  "editor.guides.bracketPairs": true,
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit",
-    "source.fixAll.biome": "explicit"
+    "source.organizeImports": "explicit"
   },
-  "editor.semanticHighlighting.enabled": true,
-  // --- Terminal (Ajustado para seu Fedora + Kitty) ---
+  // --- Terminal ---
   "terminal.integrated.fontFamily": "CaskaydiaCove NF",
+  "terminal.integrated.fontSize": 12,
   "terminal.external.linuxExec": "kitty",
-  "code-runner.runInTerminal": true,
-  // --- Sistema de Arquivos e Salvamento ---
+  // --- Arquivos ---
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 500,
-  "search.followSymlinks": false,
+  "explorer.compactFolders": false,
   "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.expand": false,
   "files.watcherExclude": {
     "**/node_modules/**": true
   },
   "search.exclude": {
     "**/node_modules": true
   },
-  // --- Git e Controle de Versão ---
+  // --- Git ---
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
   "git.autofetch": true,
-  "git.enableStatusBarSync": true,
-  // --- Inteligência Artificial (Copilot / GitLens / Chat) ---
+  // --- Copilot ---
   "github.copilot.nextEditSuggestions.enabled": true,
   "github.copilot.enable": {
     "*": true,
@@ -55,34 +43,11 @@
     "markdown": true,
     "scminput": false
   },
-  "gitlens.ai.model": "gemini:gemini-2.5-flash",
-  "chat.mcp.gallery.enabled": true,
-  // --- Outros ---
+  // --- Docker ---
+  "docker.extension.enableComposeLanguageServer": false,
+  "code-runner.runInTerminal": true,
+  // --- Privacidade ---
   "telemetry.telemetryLevel": "off",
   "redhat.telemetry.enabled": false,
-  "python.defaultInterpreterPath": "/bin/python",
-  "json.schemaDownload.trustedDomains": {
-    "https://schemastore.azurewebsites.net/": true,
-    "https://raw.githubusercontent.com/": true,
-    "https://www.schemastore.org/": true,
-    "https://json.schemastore.org/": true,
-    "https://json-schema.org/": true,
-    "https://biomejs.dev": true
-  },
-  "editor.defaultFormatter": "biomejs.biome",
-  "biome.suggestInstallingGlobally": false,
-  "js/ts.updateImportsOnFileMove.enabled": "always",
-  "docker.extension.enableComposeLanguageServer": false,
-  "chat.tools.terminal.autoApprove": {
-    "pnpm": true
-  },
-  "editor.fontLigatures": true,
-  "terminal.integrated.fontSize": 12,
-  "editor.fontSize": 13,
-  "chat.viewSessions.orientation": "stacked",
-  // --- Lua (Hyprland config) ---
-  "[lua]": {
-    "editor.defaultFormatter": "johnnymorganz.stylua",
-    "editor.formatOnSave": true
-  },
+  "window.newWindowProfile": "Default"
 }

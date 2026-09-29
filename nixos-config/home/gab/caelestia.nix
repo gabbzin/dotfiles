@@ -1,6 +1,6 @@
 # Caelestia = prioridade para Hyprland (base).
 # Etapa 2 vai adicionar hypr-vars.lua (kitty, SUPER+D) + hypr-user.lua (atalhos resgatados).
-{ caelestia-shell, ... }:
+{ caelestia-shell, pkgs, ... }:
 
 {
   imports = [ caelestia-shell.homeManagerModules.default ];
@@ -10,6 +10,13 @@
   programs.caelestia = {
     enable = true;
     cli.enable = true;
+
+    # Patch versionado: % da bateria no lugar do ícone (sem chave upstream).
+    package = caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.with-cli.overrideAttrs (old: {
+      postPatch = (old.postPatch or "") + ''
+        cp ${../../files/caelestia/BatteryStatus.qml} modules/bar/components/status/BatteryStatus.qml
+      '';
+    });
 
     # Barra: mostra só o nome do programa (último segmento após " - "),
     # em vez do título completo da janela.

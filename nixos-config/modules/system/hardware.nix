@@ -38,10 +38,18 @@ in
     wireplumber.enable = true;
   };
 
-  # Bluetooth: exigido pelo blueman-applet do autostart antigo e pelo módulo QML.
+  # Bluetooth: nasce presente mas DESLIGADO (powerOnBoot religaria sozinho;
+  # powerOnBoot=false bloqueia via rfkill e o toggle da barra não desfaz).
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
+  };
+  systemd.services.bluetooth-power-off = {
+    description = "Desliga o bluetooth no boot (liga só pelo toggle)";
+    after = [ "bluetooth.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = "${pkgs.bluez}/bin/bluetoothctl power off";
   };
   services.blueman.enable = true;
 

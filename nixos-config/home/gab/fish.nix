@@ -25,6 +25,12 @@
       nixapps = "$EDITOR ~/dotfiles/nixos-config/home/gab/packages.nix";
       nixsys = "$EDITOR ~/dotfiles/nixos-config/modules/system/core.nix";
       nixcheck = "nix --extra-experimental-features 'nix-command flakes' flake check --no-build ~/dotfiles/nixos-config";
+      # Docker (resgatados do dotfile antigo)
+      docker-start = "echo 'Iniciando o docker chefe'; sudo systemctl start docker";
+      docker-stop = "echo 'Parando o docker'; sudo systemctl stop docker";
+      docker-status = "systemctl status docker";
+      docker-restart = "echo 'Reiniciando o docker...'; sudo systemctl restart docker";
+      docker-ps-no-port = "docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.Status}}\t{{.Names}}'";
     };
 
     functions = {

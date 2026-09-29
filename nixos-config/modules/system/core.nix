@@ -29,12 +29,15 @@
   };
   console.keyMap = "br-abnt2";
 
+  virtualisation.docker.enable = true;
+
   users.users."gab" = {
     isNormalUser = true;
     description = "Gabriel";
     extraGroups = [
       "networkmanager"
       "wheel"
+      "docker"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.fish;
@@ -82,7 +85,7 @@
   environment.systemPackages = with pkgs; [
     kdePackages.dolphin
     vim
-    vscode # binário; perfis+extensões gerenciados pelo próprio VSCode (editors.nix)
+    vscode
     spotify
     brave
     wget
@@ -94,17 +97,19 @@
     git
     unzip
     hyprlauncher
-    # Exigidos pelos binds/autostart do Hyprland Caelestia (Etapa 2)
-    hyprpolkitagent # agente polkit (execs.lua)
-    hyprpicker # SUPER+SHIFT+C color picker
-    fuzzel # clipboard/emoji/launcher do caelestia CLI
-    libnotify # notify-send (bind de teste)
+    hyprpolkitagent
+    hyprpicker
+    fuzzel
+    libnotify
     trash-cli # trash-empty 30 (execs.lua)
     bibata-cursors # cursor (cursorTheme no hypr-vars.lua)
     adwaita-icon-theme # ícones dos .desktop (launcher)
-    gh # GitHub CLI (auth pra abrir issue upstream)
+    gh
     reaper
     anydesk
+    docker
+
+
     # Prompt de nome ao abrir kitty (SUPER+Return): Enter vazio = padrão, Esc = cancela.
     # Fixa o nome na ABA via fish_title (o fish sobrescreveria --title sozinho).
     (pkgs.writeShellScriptBin "kitty-title" ''
