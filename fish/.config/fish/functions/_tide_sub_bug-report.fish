@@ -4,9 +4,13 @@ function _tide_sub_bug-report
     set -l fish_path (status fish-path)
 
     if set -q _flag_clean
-        HOME=(mktemp -d) $fish_path --init-command "curl --silent \
-        https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish |
-        source && fisher install ilancosman/tide@v6"
+        set -l fisher_local (path dirname (status filename))/fisher.fish
+        test -f $fisher_local
+        _tide_check_condition \
+            "Could not find local fisher installer." \
+            "Expected file: $fisher_local" \
+            "Please reinstall Tide before submitting a bug report." || return
+        HOME=(mktemp -d) $fish_path --init-command "source $fisher_local && fisher install ilancosman/tide@v6"
     else if set -q _flag_verbose
         set --long | string match -r "^_?tide.*" | # Get only tide variables
             string match -r --invert "^_tide_prompt_var.*" # Remove _tide_prompt_var

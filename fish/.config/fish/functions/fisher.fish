@@ -87,7 +87,19 @@ function fisher --argument-names cmd --description "A plugin manager for Fish"
                         command cp -Rf $plugin/* $source
                     else
                         set temp (command mktemp -d)
-                        set repo (string split -- \@ $plugin) || set repo[2] HEAD
+                        set repo (string split --max 1 \@ $plugin)
+
+                        if test (count \$repo) -lt 2
+                            echo fisher: Missing plugin ref for \\\"$plugin\\\". Use owner/repo@ref >&2
+                            command rm -rf $source \$temp
+                            exit 1
+                        end
+
+                        if contains -- (string lower -- \$repo[2]) head main master
+                            echo fisher: Ref \\\"\$repo[2]\\\" is not allowed for \\\"$plugin\\\". Use a pinned tag or commit. >&2
+                            command rm -rf $source \$temp
+                            exit 1
+                        end
 
                         if set path (string replace --regex -- '^(https://)?gitlab.com/' '' \$repo[1])
                             set name (string split -- / \$path)[-1]
