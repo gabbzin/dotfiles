@@ -41,6 +41,19 @@
     -- ALT+F4 também fecha a janela (hábito Windows).
     hl.bind("ALT + F4", hl.dsp.window.close())
 
+    -- JARVIS: sem trava de workspace (regras removidas de propósito).
+    -- O jarvis instancia direto no ws via exec_cmd com workspace.
+    -- Spotify continua no special:music (padrão do Caelestia em rules.lua, SUPER+M puxa).
+
+    -- JARVIS: SUPER+J abre o setup direto, SUPER+SHIFT+J é push-to-talk.
+    -- Caminho absoluto porque o Hyprland não herda o PATH do fish.
+    hl.bind("SUPER + J", hl.dsp.exec_cmd("/home/gab/.local/bin/jarvis"))
+    hl.bind("SUPER + SHIFT + J", hl.dsp.exec_cmd("/home/gab/.local/bin/jarvis-push"))
+    -- Tecla Copilot do ThinkPad (wev: SUPER+SHIFT+key201 XF86Assistant).
+    -- Sozinha = setup direto; com ALT segurado = push-to-talk.
+    hl.bind("SUPER + SHIFT + XF86Assistant", hl.dsp.exec_cmd("/home/gab/.local/bin/jarvis"))
+    hl.bind("SUPER + SHIFT + ALT + XF86Assistant", hl.dsp.exec_cmd("/home/gab/.local/bin/jarvis-push"))
+
     -- SUPER+Return abre o kitty limpo (kbTerminal); SUPER+ALT+Return
     -- pergunta o nome antes (kitty-title). Dentro do kitty, o rename
     -- continua no Ctrl+Shift+Alt+T nativo.

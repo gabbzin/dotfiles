@@ -3,14 +3,18 @@
 
 {
   home.packages = with pkgs; [
-    python3
     mise
-    # Deps do Neovim (Treesitter compila parsers, Telescope busca)
+    # JARVIS: voz + tema instrumental
+    espeak-ng
+    mpv
+    libnotify
+    (python3.withPackages (ps: with ps; [ speechrecognition pyaudio ]))
     gcc
     ripgrep
     fd
     lazygit
     wakatime-cli
+    code-cursor
   ];
 
   # "Rebuild NixOS" para o commands do launcher

@@ -7,6 +7,13 @@
 
   home.stateVersion = "26.05";
 
+  # Tema de ícones pro shell/apps (Quickshell resolve via dconf).
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      icon-theme = "Papirus";
+    };
+  };
+
   programs.caelestia = {
     enable = true;
     cli.enable = true;

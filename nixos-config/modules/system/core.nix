@@ -68,20 +68,33 @@
 
   programs.nix-ld.enable = true;
 
-  # Keyring + dconf (gsettings) exigidos pelo autostart do Hyprland (execs.lua).
   services.gnome.gnome-keyring.enable = true;
+  services.gnome.gcr-ssh-agent.enable = false;
   programs.dconf.enable = true;
 
-  # Fontes do sistema: Material Symbols (ícones da barra) + JetBrainsMono NF
-  # (fonte padrão da UI do shell). Sem elas o quickshell cai em fallback.
+  # gpu-screen-recorder exige cap_sys_admin no gsr-kms-server (store é
+  # read-only: setcap direto impossível). Wrapper com a capability.
+  security.wrappers.gsr-kms-server = {
+    owner = "root";
+    group = "root";
+    capabilities = "cap_sys_admin+ep";
+    source = "${pkgs.gpu-screen-recorder}/bin/gsr-kms-server";
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  
   fonts.packages = with pkgs; [
     material-symbols
     nerd-fonts.jetbrains-mono
     nerd-fonts.caskaydia-cove
+    cascadia-code
   ];
 
-  # TODO Etapa 4: mover apps de usuário (vscode, zed, spotify, brave)
-  # para home/gab/packages.nix. Mantidos aqui na Etapa 1 para não quebrar.
+  
   environment.systemPackages = with pkgs; [
     kdePackages.dolphin
     vim
@@ -104,11 +117,13 @@
     trash-cli # trash-empty 30 (execs.lua)
     bibata-cursors # cursor (cursorTheme no hypr-vars.lua)
     adwaita-icon-theme # ícones dos .desktop (launcher)
+    papirus-icon-theme # ícones de apps (workspaces/barra) — cobre Spotify/Brave/Kitty/VSCode
     gh
+    powertop # caça-gastadores de bateria
+    gpu-screen-recorder # backend do `caelestia record` (SUPER+ALT+R)
     reaper
     anydesk
     docker
-
 
     # Prompt de nome ao abrir kitty (SUPER+Return): Enter vazio = padrão, Esc = cancela.
     # Fixa o nome na ABA via fish_title (o fish sobrescreveria --title sozinho).

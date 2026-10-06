@@ -10,11 +10,15 @@ import qs.utils
 StyledText {
     required property color colour
 
+    readonly property bool charging: [UPowerDeviceState.Charging, UPowerDeviceState.FullyCharged, UPowerDeviceState.PendingCharge].includes(UPower.displayDevice.state)
+    readonly property real percent: UPower.displayDevice.percentage
+
     animate: true
     text: {
         if (!UPower.displayDevice.isLaptopBattery)
             return "";
-        return Math.round(UPower.displayDevice.percentage * 100) + "%";
+        return Math.round(percent * 100) + "%";
     }
-    color: !UPower.onBattery || UPower.displayDevice.percentage > 0.2 ? colour : Colours.palette.m3error
+    // Carregando = verde, perto de descarregar (<20% fora da tomada) = vermelho.
+    color: charging ? "#4ade80" : (!UPower.onBattery || percent > 0.2 ? colour : Colours.palette.m3error)
 }
