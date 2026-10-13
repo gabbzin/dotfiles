@@ -13,6 +13,11 @@
       url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    qylock = {
+      url = "github:Darkkal44/qylock";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -21,12 +26,16 @@
       nixpkgs,
       home-manager,
       caelestia-shell,
+      qylock,
       ...
     }:
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [ ./hosts/nixos/default.nix ];
+        modules = [
+          ./hosts/nixos/default.nix
+          qylock.nixosModules.default
+        ];
         specialArgs = { inherit home-manager caelestia-shell; };
       };
     };

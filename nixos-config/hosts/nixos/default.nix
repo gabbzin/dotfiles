@@ -8,6 +8,7 @@
     ./hardware-configuration.nix
     ../../modules/system/core.nix
     ../../modules/system/hardware.nix
+    ../../modules/system/qylock.nix
     home-manager.nixosModules.default
     ../../home/gab/default.nix
   ];
