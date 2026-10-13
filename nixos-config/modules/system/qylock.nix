@@ -8,6 +8,8 @@
     wayland.enable = true;
   };
 
+  services.displayManager.defaultSession = "hyprland-uwsm";
+
   programs.qylock = {
     enable = true;
     theme = "clockwork/orbital";
@@ -18,8 +20,6 @@
       enableWindup = true;
     };
   };
-
-  security.pam.services.sddm.fprintAuth = true;
 
   fonts.packages = with pkgs; [
     orbitron

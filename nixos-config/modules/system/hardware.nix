@@ -53,10 +53,10 @@ in
   };
   services.blueman.enable = true;
 
-  # Digital (ELAN 04f3:0c8c): login (tuigreet) + sudo sem senha.
+  # Digital (ELAN 04f3:0c8c): login por senha (SDDM) + sudo com digital.
   # Se fprintd-enroll disser "no devices", ligar tod: services.fprintd.tod.enable = true.
   services.fprintd.enable = true;
-  security.pam.services.login.fprintAuth = true;
+  security.pam.services.login.fprintAuth = false;
   security.pam.services.greetd.fprintAuth = true;
   security.pam.services.sudo.fprintAuth = true;
 
