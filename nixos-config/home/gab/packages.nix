@@ -15,7 +15,16 @@
     lazygit
     wakatime-cli
     code-cursor
+    # Prisma: engines Rust pro `generate` (o npm baixa binários que quebram no NixOS).
+    # Usa o CLI do projeto (npx prisma) + engines daqui. Projetos em 7.x, engines 7.10.
+    prisma-engines
+    # Biome tem pacote nativo (sem BO de engines): CLI + VSCode usam o mesmo.
+    biome
   ];
+
+  home.sessionVariables = {
+    PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
+  };
 
   # "Rebuild NixOS" para o commands do launcher
   xdg.desktopEntries.nixos-rebuild = {

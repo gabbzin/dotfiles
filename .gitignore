@@ -35,7 +35,9 @@ yarn-error.log*
 **/Code/User/History/
 **/Code/User/globalStorage/
 **/Code/User/Backups/
+**/globalStorage/
+**/*.vscdb*
 
 # Ignorar lixos dinâmicos do Fish
 **/fish/.config/fish/completions/
-**/fish/.config/fish/fish_variables
+**/fish_variables*

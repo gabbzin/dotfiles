@@ -18,6 +18,23 @@
       fish_add_path "$HOME/.local/bin"
 
       ${pkgs.mise}/bin/mise activate fish | source
+
+      # WakaTime terminal, modo econômico: 1 heartbeat no máx a cada 120s,
+      # só após comando, em background, silencioso. Projeto = git root ou pasta.
+      set -g _wakatime_last_sent 0
+      function __wakatime_hook --on-event fish_postexec -d "heartbeat leve WakaTime"
+        command -q wakatime-cli; or return
+        set -l now (date +%s)
+        if test (math "$now - $_wakatime_last_sent") -lt 120
+          return
+        end
+        set -g _wakatime_last_sent $now
+        set -l proj (git rev-parse --show-toplevel 2>/dev/null | xargs basename 2>/dev/null); or set proj (basename "$PWD")
+        test -z "$proj"; and set proj "Terminal"
+        set -l cmd (string split -m1 " " -- $history[1])[1]
+        test -z "$cmd"; and set cmd "fish"
+        wakatime-cli --write --plugin "fish-wakatime/0.1" --entity-type app --project "$proj" --entity "$cmd" >/dev/null 2>&1 &
+      end
     '';
 
     # Atalhos de edição do sistema (flake versionado).
@@ -41,6 +58,43 @@
           sudo nixos-rebuild switch --flake ~/dotfiles/nixos-config#nixos
           and hyprctl reload
           and systemctl --user restart caelestia
+        '';
+      };
+
+      dns = {
+        description = "Troca DNS via nmcli: dns [cloudflare|google|quad9|automatic|status]";
+        body = ''
+          set connection (nmcli -g GENERAL.CONNECTION device show 2>/dev/null | head -n 1)
+
+          if test -z "$connection" -o "$connection" = "--"
+            echo "Nenhuma conexão ativa encontrada."
+            return 1
+          end
+
+          switch "$argv[1]"
+            case cloudflare
+              set servers "1.1.1.1 1.0.0.1"
+            case google
+              set servers "8.8.8.8 8.8.4.4"
+            case quad9
+              set servers "9.9.9.9 149.112.112.112"
+            case automatic
+              sudo nmcli connection modify "$connection" \
+                ipv4.ignore-auto-dns no ipv4.dns ""
+              and sudo nmcli connection up "$connection"
+              return
+            case status
+              nmcli device show | grep -E 'GENERAL.CONNECTION|IP4.DNS'
+              return
+            case '*'
+              echo "Uso: dns [cloudflare|google|quad9|automatic|status]"
+              return 1
+          end
+
+          sudo nmcli connection modify "$connection" \
+            ipv4.dns "$servers" ipv4.ignore-auto-dns yes
+
+          and sudo nmcli connection up "$connection"
         '';
       };
 

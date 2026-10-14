@@ -47,9 +47,21 @@
     "nix-command"
     "flakes"
   ];
-  nixpkgs.config.allowUnfree = true;
+  
+  nixpkgs.config = {
+    allowUnfree = true;
+
+    permittedInsecurePackages = [
+      "ventoy-1.1.17"
+    ];
+  };
 
   programs.fish.enable = true;
+
+  services.tailscale.enable = true;
+
+  networking.firewall.checkReversePath = "loose";
+  networking.firewall.allowedUDPPorts = [ 41641 ];
 
   programs.hyprland = {
     enable = true;
@@ -79,6 +91,20 @@
     group = "root";
     capabilities = "cap_sys_admin+ep";
     source = "${pkgs.gpu-screen-recorder}/bin/gsr-kms-server";
+  };
+
+  # AnyDesk não assistido: daemon como root (o pacote nix não traz o service).
+  # Após o switch: sudo anydesk --set-password (senha de acesso) e anota o ID.
+  systemd.services.anydesk = {
+    description = "AnyDesk";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.anydesk}/bin/anydesk --service";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
   };
 
   programs.direnv = {
@@ -121,6 +147,8 @@
     gh
     powertop # caça-gastadores de bateria
     gpu-screen-recorder # backend do `caelestia record` (SUPER+ALT+R)
+    glib # gsettings (diagnóstico de tema)
+    dconf # dconf CLI (diagnóstico de tema)
     reaper
     anydesk
     docker
