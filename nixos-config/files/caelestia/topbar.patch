@@ -1,0 +1,394 @@
+--- a/modules/bar/BarWrapper.qml
++++ b/modules/bar/BarWrapper.qml
+@@ -4,6 +4,7 @@
+ import Quickshell
+ import Caelestia.Config
+ import qs.components
++import qs.services
+ import qs.utils
+ import qs.modules.bar.popouts as BarPopouts
+ 
+@@ -15,21 +16,28 @@
+     required property BarPopouts.Wrapper popouts
+     required property bool fullscreen
+ 
++    // DIVERGÊNCIA NixOS: na variante glass a barra fica no topo (UiVariant lê o ui-variant).
++    readonly property bool onTop: UiVariant.topBar
+     readonly property bool disabled: Strings.testRegexList(Config.bar.excludedScreens, screen.name)
+ 
+     readonly property int clampedWidth: Math.max(Config.border.minThickness, implicitWidth)
+     readonly property int padding: Math.max(Tokens.padding.small, Config.border.thickness)
+     readonly property int contentWidth: Tokens.sizes.bar.innerWidth + padding * 2
+-    readonly property int exclusiveZone: !disabled && (Config.bar.persistent || screenState.bar) ? contentWidth : Config.border.thickness
++    // Barra do topo mais fina que a lateral: só a altura dos itens (40px), sem o padding extra.
++    readonly property int contentHeight: Tokens.sizes.bar.innerWidth
++    readonly property int exclusiveZone: !disabled && (Config.bar.persistent || screenState.bar) ? (onTop ? contentHeight : contentWidth) : Config.border.thickness
+     readonly property bool shouldBeVisible: !fullscreen && !disabled && (Config.bar.persistent || screenState.bar || isHovered)
+     property bool isHovered
+ 
+     function closeTray(): void {
+         (content.item as Bar)?.closeTray();
++        (topContent.item as TopBar)?.closeTray();
+     }
+ 
+-    function checkPopout(y: real): void {
+-        (content.item as Bar)?.checkPopout(y);
++    // Lateral: p = y do ponteiro. Topo: p = x do ponteiro.
++    function checkPopout(p: real): void {
++        (content.item as Bar)?.checkPopout(p);
++        (topContent.item as TopBar)?.checkPopout(p);
+     }
+ 
+     function handleWheel(y: real, angleDelta: point): void {
+@@ -37,17 +45,29 @@
+     }
+ 
+     clip: true
+-    visible: width > Config.border.thickness
++    visible: onTop ? height > Config.border.thickness : width > Config.border.thickness
++    // Esquerda: o implicitWidth é o inset esquerdo. Topo: o implicitHeight é o inset de cima.
+     implicitWidth: fullscreen ? 0 : Config.border.thickness
++    implicitHeight: onTop && !fullscreen ? Config.border.thickness : 0
+ 
+-    states: State {
+-        name: "visible"
+-        when: root.shouldBeVisible
++    states: [
++        State {
++            name: "visible"
++            when: root.shouldBeVisible && !root.onTop
+ 
+-        PropertyChanges {
+-            root.implicitWidth: root.contentWidth
++            PropertyChanges {
++                root.implicitWidth: root.contentWidth
++            }
++        },
++        State {
++            name: "visibleTop"
++            when: root.shouldBeVisible && root.onTop
++
++            PropertyChanges {
++                root.implicitHeight: root.contentHeight
++            }
+         }
+-    }
++    ]
+ 
+     transitions: [
+         Transition {
+@@ -68,9 +88,29 @@
+                 property: "implicitWidth"
+                 type: Anim.Emphasized
+             }
++        },
++        Transition {
++            from: ""
++            to: "visibleTop"
++
++            Anim {
++                target: root
++                property: "implicitHeight"
++            }
++        },
++        Transition {
++            from: "visibleTop"
++            to: ""
++
++            Anim {
++                target: root
++                property: "implicitHeight"
++                type: Anim.Emphasized
++            }
+         }
+     ]
+ 
++    // Barra lateral (layout original): âncoras top/bottom/right.
+     Loader {
+         id: content
+ 
+@@ -78,13 +118,44 @@
+         anchors.bottom: parent.bottom
+         anchors.right: parent.right
+ 
+-        active: root.shouldBeVisible
++        active: root.shouldBeVisible && !root.onTop && UiVariant.ready
++
++        sourceComponent: leftBarComp
++    }
++
++    // Barra do topo (variante glass): geometria explícita, sem âncora condicional.
++    Loader {
++        id: topContent
++
++        x: 0
++        y: 0
++        width: root.width
++        height: root.contentHeight
++
++        active: root.shouldBeVisible && root.onTop && UiVariant.ready
++
++        sourceComponent: topBarComp
++    }
++
++    Component {
++        id: leftBarComp
+ 
+-        sourceComponent: Bar {
++        Bar {
+             width: root.contentWidth
+             screen: root.screen
+             screenState: root.screenState
+             popouts: root.popouts // qmllint disable incompatible-type
++            fullscreen: root.fullscreen
++        }
++    }
++
++    Component {
++        id: topBarComp
++
++        TopBar {
++            screen: root.screen
++            screenState: root.screenState
++            popouts: root.popouts // qmllint disable incompatible-type
+             fullscreen: root.fullscreen
+         }
+     }
+--- a/modules/bar/popouts/ClipWrapper.qml
++++ b/modules/bar/popouts/ClipWrapper.qml
+@@ -3,6 +3,7 @@
+ import QtQuick
+ import Quickshell
+ import qs.components
++import qs.services
+ import qs.modules.bar.popouts // Need to import this module so the Wrapper type is the same as others
+ 
+ Item {
+@@ -12,18 +13,29 @@
+     required property real borderThickness
+ 
+     readonly property alias content: content
+-    property real offsetScale: x > 0 || content.hasCurrent ? 0 : 1
++    // DIVERGÊNCIA NixOS: na barra do topo o popout desce da barra (centrado no ícone) em vez de sair da lateral.
++    property real offsetScale: UiVariant.topBar ? (content.hasCurrent || content.isDetached ? 0 : 1) : (x > 0 || content.hasCurrent ? 0 : 1)
+ 
+     visible: width > 0 && height > 0
+     clip: true
+ 
+-    implicitWidth: content.implicitWidth * (1 - offsetScale)
+-    implicitHeight: content.implicitHeight
++    implicitWidth: UiVariant.topBar ? content.implicitWidth : content.implicitWidth * (1 - offsetScale)
++    implicitHeight: UiVariant.topBar ? content.implicitHeight * (1 - offsetScale) : content.implicitHeight
+ 
+-    x: content.isDetached ? (parent.width - content.nonAnimWidth) / 2 : 0
++    x: {
++        if (content.isDetached)
++            return (parent.width - content.nonAnimWidth) / 2;
++        if (UiVariant.topBar) {
++            const off = content.currentCenter - borderThickness - content.nonAnimWidth / 2;
++            return Math.max(0, Math.min(off, parent.width - content.nonAnimWidth));
++        }
++        return 0;
++    }
+     y: {
+         if (content.isDetached)
+             return (parent.height - content.nonAnimHeight) / 2;
++        if (UiVariant.topBar)
++            return 0;
+ 
+         const off = content.currentCenter - borderThickness - content.nonAnimHeight / 2;
+         const diff = parent.height - Math.floor(off + content.nonAnimHeight);
+@@ -58,8 +70,8 @@
+         screen: root.screen
+         offsetScale: root.offsetScale
+ 
+-        anchors.verticalCenter: parent.verticalCenter
+-        anchors.left: parent.left
+-        anchors.leftMargin: (-implicitWidth - 5) * root.offsetScale
++        // Posição explícita (âncoras condicionais não soltam depois que a variante carrega)
++        x: UiVariant.topBar ? 0 : (-implicitWidth - 5) * root.offsetScale
++        y: UiVariant.topBar ? (-implicitHeight - 5) * root.offsetScale : (parent.height - height) / 2
+     }
+ }
+--- a/modules/drawers/ContentWindow.qml
++++ b/modules/drawers/ContentWindow.qml
+@@ -89,13 +89,13 @@
+         id: emptyRegion
+ 
+         x: panels.notifications.x + bar.implicitWidth
+-        y: panels.notifications.y + root.borderThickness
++        y: panels.notifications.y + root.borderThickness + bar.implicitHeight
+         width: panels.notifications.width
+         height: panels.notifications.height
+ 
+         Region {
+             x: root.width - width
+-            y: panels.osdWrapper.y + root.borderThickness
++            y: panels.osdWrapper.y + root.borderThickness + bar.implicitHeight
+             width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + root.borderThickness
+             height: panels.osd.height
+         }
+@@ -170,7 +170,7 @@
+             radius: root.borderRounding
+             borderLeft: bar.implicitWidth - anchors.margins - root.sdfBorderOffset
+             borderRight: root.borderThickness - anchors.margins - root.sdfBorderOffset
+-            borderTop: root.borderThickness - anchors.margins - root.sdfBorderOffset
++            borderTop: root.borderThickness + bar.implicitHeight - anchors.margins - root.sdfBorderOffset
+             borderBottom: root.borderThickness - anchors.margins - root.sdfBorderOffset
+         }
+ 
+@@ -239,8 +239,11 @@
+ 
+             panel: panels.popoutsWrapper
+             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
+-            x: panels.popoutsWrapper.x + panels.popouts.x + bar.implicitWidth - panels.popouts.width * extraWidth
+-            implicitWidth: panels.popouts.width * (1 + extraWidth)
++            // Barra do topo: o fundo se estende para cima (junto da barra); lateral: para a esquerda.
++            x: panels.popoutsWrapper.x + panels.popouts.x + bar.implicitWidth - (UiVariant.topBar ? 0 : panels.popouts.width * extraWidth)
++            y: panels.popoutsWrapper.y + panels.popouts.y + root.borderThickness + bar.implicitHeight - (UiVariant.topBar ? panels.popouts.height * extraWidth : 0)
++            implicitWidth: panels.popouts.width * (UiVariant.topBar ? 1 : 1 + extraWidth)
++            implicitHeight: panels.popouts.height * (UiVariant.topBar ? 1 + extraWidth : 1)
+ 
+             Behavior on extraWidth {
+                 Anim {}
+@@ -299,8 +302,12 @@
+         BarWrapper {
+             id: bar
+ 
+-            anchors.top: parent.top
+-            anchors.bottom: parent.bottom
++            // Geometria explícita (âncoras condicionais não soltavam quando a variante carregava depois):
++            // lateral = coluna à esquerda; topo = faixa em cima.
++            x: 0
++            y: 0
++            width: UiVariant.topBar ? parent.width : implicitWidth
++            height: UiVariant.topBar ? implicitHeight : parent.height
+ 
+             screen: root.screen
+             screenState: root.screenState
+@@ -340,7 +347,7 @@
+ 
+         group: blobGroup
+         x: panel.x + bar.implicitWidth
+-        y: panel.y + root.borderThickness
++        y: panel.y + root.borderThickness + bar.implicitHeight
+         implicitWidth: panel.width
+         implicitHeight: panel.height
+         radius: Tokens.rounding.extraLarge
+--- a/modules/drawers/Exclusions.qml
++++ b/modules/drawers/Exclusions.qml
+@@ -14,11 +14,12 @@
+ 
+     ExclusionZone {
+         anchors.left: true
+-        exclusiveZone: root.bar.exclusiveZone
++        exclusiveZone: root.bar.onTop ? contentItem.Config.border.thickness : root.bar.exclusiveZone
+     }
+ 
+     ExclusionZone {
+         anchors.top: true
++        exclusiveZone: root.bar.onTop ? root.bar.exclusiveZone : contentItem.Config.border.thickness
+     }
+ 
+     ExclusionZone {
+--- a/modules/drawers/Interactions.qml
++++ b/modules/drawers/Interactions.qml
+@@ -3,6 +3,7 @@
+ import Quickshell
+ import Caelestia.Config
+ import qs.components
++import qs.services
+ import qs.components.controls
+ import qs.modules.bar as Bar
+ import qs.modules.bar.popouts as BarPopouts
+@@ -24,7 +25,7 @@
+     property bool utilitiesShortcutActive
+ 
+     function withinPanelHeight(panel: Item, x: real, y: real): bool {
+-        const panelY = root.borderThickness + panel.y;
++        const panelY = root.borderThickness + bar.implicitHeight + panel.y;
+         return y >= panelY - Config.border.rounding && y <= panelY + panel.height + Config.border.rounding;
+     }
+ 
+@@ -41,9 +42,17 @@
+         return x > Math.min(width - Config.border.minThickness, bar.implicitWidth + panel.x) && withinPanelHeight(panel, x, y);
+     }
+ 
++    // Painel pendurado na barra do topo (popouts): da barra até o fim do painel.
++    function inHangingPanel(panel: Item, x: real, y: real): bool {
++        const panelY = root.borderThickness + bar.implicitHeight + panel.y;
++        return y <= panelY + panel.height + Config.border.rounding && withinPanelWidth(panel, x, y);
++    }
++
+     function inTopPanel(panel: Item, x: real, y: real): bool {
+         const panelHeight = panel.height * (1 - (panel.offsetScale ?? 0)); // qmllint disable missing-property
+-        return y < Math.max(Config.border.minThickness, Config.border.thickness + panelHeight) && withinPanelWidth(panel, x, y);
++        // Barra no topo: o painel aberto começa abaixo dela; fechado, só a borda da tela dispara o hover.
++        const barOffset = panelHeight > 0 ? bar.implicitHeight : 0;
++        return y < Math.max(Config.border.minThickness, Config.border.thickness + barOffset + panelHeight) && withinPanelWidth(panel, x, y);
+     }
+ 
+     function inBottomPanel(panel: Item, x: real, y: real, isCorner = false): bool {
+@@ -238,9 +247,9 @@
+         }
+ 
+         // Show popouts on hover
+-        if (x < bar.implicitWidth) {
+-            bar.checkPopout(y);
+-        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popoutsWrapper, x, y)) {
++        if (UiVariant.topBar ? y < bar.implicitHeight : x < bar.implicitWidth) {
++            bar.checkPopout(UiVariant.topBar ? x : y);
++        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !(UiVariant.topBar ? inHangingPanel(panels.popoutsWrapper, x, y) : inLeftPanel(panels.popoutsWrapper, x, y))) {
+             popouts.hasCurrent = false;
+             bar.closeTray();
+         }
+--- a/modules/drawers/Panels.qml
++++ b/modules/drawers/Panels.qml
+@@ -37,6 +37,7 @@
+     anchors.fill: parent
+     anchors.margins: borderThickness
+     anchors.leftMargin: bar.implicitWidth
++    anchors.topMargin: borderThickness + bar.implicitHeight
+ 
+     Item {
+         id: osdWrapper
+--- a/modules/drawers/Regions.qml
++++ b/modules/drawers/Regions.qml
+@@ -4,6 +4,7 @@
+ import Quickshell
+ import Caelestia.Config
+ import qs.modules.bar as Bar
++import qs.services
+ 
+ Region {
+     id: root
+@@ -16,9 +17,9 @@
+     readonly property real clampedThickness: win.contentItem.Config.border.clampedThickness
+ 
+     x: bar.clampedWidth + win.dragMaskPadding
+-    y: clampedThickness + win.dragMaskPadding
++    y: clampedThickness + bar.implicitHeight + win.dragMaskPadding
+     width: win.width - bar.clampedWidth - clampedThickness - win.dragMaskPadding * 2
+-    height: win.height - clampedThickness * 2 - win.dragMaskPadding * 2
++    height: win.height - clampedThickness * 2 - bar.implicitHeight - win.dragMaskPadding * 2
+     intersection: Intersection.Xor
+ 
+     R {
+@@ -69,14 +70,15 @@
+ 
+     R {
+         panel: root.panels.popoutsWrapper
+-        width: panel.width * (1 - root.panels.popoutsWrapper.offsetScale)
++        width: UiVariant.topBar ? panel.width : panel.width * (1 - root.panels.popoutsWrapper.offsetScale)
++        height: UiVariant.topBar ? panel.height * (1 - root.panels.popoutsWrapper.offsetScale) : panel.height
+     }
+ 
+     component R: Region {
+         required property Item panel
+ 
+         x: panel.x + root.bar.implicitWidth
+-        y: panel.y + root.borderThickness
++        y: panel.y + root.borderThickness + root.bar.implicitHeight
+         width: panel.width
+         height: panel.height
+         intersection: Intersection.Subtract
