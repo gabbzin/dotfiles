@@ -43,12 +43,16 @@
       nixapps = "$EDITOR ~/dotfiles/nixos-config/home/gab/packages.nix";
       nixsys = "$EDITOR ~/dotfiles/nixos-config/modules/system/core.nix";
       nixcheck = "nix --extra-experimental-features 'nix-command flakes' flake check --no-build ~/dotfiles/nixos-config";
+      up = "sudo nixos-rebuild switch --flake ~/dotfiles/nixos-config";
       # Docker (resgatados do dotfile antigo)
       docker-start = "echo 'Iniciando o docker chefe'; sudo systemctl start docker";
       docker-stop = "echo 'Parando o docker'; sudo systemctl stop docker";
       docker-status = "systemctl status docker";
       docker-restart = "echo 'Reiniciando o docker...'; sudo systemctl restart docker";
       docker-ps-no-port = "docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.Status}}\t{{.Names}}'";
+      sshd-start = "echo 'Iniciando o sshd chefe'; sudo systemctl start sshd";
+      sshd-stop = "echo 'Parando o sshd'; sudo systemctl stop sshd";
+      sshd-status = "systemctl status sshd";
     };
 
     functions = {
@@ -58,6 +62,17 @@
           sudo nixos-rebuild switch --flake ~/dotfiles/nixos-config#nixos
           and hyprctl reload
           and systemctl --user restart caelestia
+        '';
+      };
+
+      update = {
+        description = "Só atualiza os inputs do flake (default: nixpkgs; 'update all' = todos). Aplica com rebuild";
+        body = ''
+          if test "$argv[1]" = "all"
+            nix flake update --flake ~/dotfiles/nixos-config
+          else
+            nix flake update nixpkgs --flake ~/dotfiles/nixos-config
+          end
         '';
       };
 
