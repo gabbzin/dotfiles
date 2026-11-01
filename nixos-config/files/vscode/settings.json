@@ -1,6 +1,6 @@
 {
   // --- Interface (mínimo: tema + ícones) ---
-  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
   "workbench.iconTheme": "material-icon-theme",
   "material-icon-theme.activeIconPack": "nest",
   "material-icon-theme.folders.theme": "specific",
@@ -18,7 +18,6 @@
   },
   // --- Terminal ---
   "terminal.integrated.fontFamily": "CaskaydiaCove NF",
-  "terminal.integrated.fontSize": 12,
   "terminal.external.linuxExec": "kitty",
   // --- Arquivos ---
   "files.autoSave": "afterDelay",
@@ -49,5 +48,7 @@
   // --- Privacidade ---
   "telemetry.telemetryLevel": "off",
   "redhat.telemetry.enabled": false,
-  "window.newWindowProfile": "Default"
+  "window.newWindowProfile": "Default",
+  "terminal.integrated.fontSize": 13,
+  "js/ts.updateImportsOnFileMove.enabled": "always"
 }

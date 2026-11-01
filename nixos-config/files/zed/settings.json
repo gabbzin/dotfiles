@@ -68,7 +68,7 @@
     "default_model": {
       "effort": "medium",
       "provider": "zed.dev",
-      "model": "claude-sonnet-4-6",
+      "model": "gpt-6.1-sol",
       "enable_thinking": true,
     },
     "favorite_models": [],

@@ -19,17 +19,13 @@ let
     { dest = "Code/User/profiles/18d82f/settings.json"; src = "${files}/vscode/profiles/18d82f/settings.json"; }
     { dest = "Code/User/profiles/18d82f/keybindings.json"; src = "${files}/vscode/profiles/18d82f/keybindings.json"; }
     { dest = "Code/User/profiles/18d82f/mcp.json"; src = "${files}/vscode/profiles/18d82f/mcp.json"; }
-    { dest = "Code/User/profiles/18d82f/globalStorage/state.vscdb"; src = "${files}/vscode/profiles/18d82f/globalStorage/state.vscdb"; }
     { dest = "Code/User/profiles/332785d1/settings.json"; src = "${files}/vscode/profiles/332785d1/settings.json"; }
     { dest = "Code/User/profiles/332785d1/mcp.json"; src = "${files}/vscode/profiles/332785d1/mcp.json"; }
-    { dest = "Code/User/profiles/332785d1/globalStorage/state.vscdb"; src = "${files}/vscode/profiles/332785d1/globalStorage/state.vscdb"; }
     { dest = "Code/User/profiles/4ba6ade9/settings.json"; src = "${files}/vscode/profiles/4ba6ade9/settings.json"; }
     { dest = "Code/User/profiles/4ba6ade9/keybindings.json"; src = "${files}/vscode/profiles/4ba6ade9/keybindings.json"; }
-    { dest = "Code/User/profiles/4ba6ade9/globalStorage/state.vscdb"; src = "${files}/vscode/profiles/4ba6ade9/globalStorage/state.vscdb"; }
     { dest = "Code/User/profiles/5232c4b4/settings.json"; src = "${files}/vscode/profiles/5232c4b4/settings.json"; }
     { dest = "Code/User/profiles/5232c4b4/keybindings.json"; src = "${files}/vscode/profiles/5232c4b4/keybindings.json"; }
     { dest = "Code/User/profiles/5232c4b4/mcp.json"; src = "${files}/vscode/profiles/5232c4b4/mcp.json"; }
-    { dest = "Code/User/profiles/5232c4b4/globalStorage/state.vscdb"; src = "${files}/vscode/profiles/5232c4b4/globalStorage/state.vscdb"; }
   ];
 in
 {

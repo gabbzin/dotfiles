@@ -69,4 +69,25 @@
       "ctrl-d": "editor::SelectNext",
     },
   },
+  // Recolher todas as pastas (VSCode: ctrl+m)
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-m": "project_panel::CollapseAllEntries",
+    },
+  },
+  // Ir para os arquivos (VSCode: ctrl+0)
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-0": "project_panel::ToggleFocus",
+    },
+  },
+  // Abrir terminal (VSCode: ctrl+shift+c)
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-shift-c": "workspace::NewTerminal",
+    },
+  },
 ]
