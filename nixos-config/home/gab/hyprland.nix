@@ -28,6 +28,9 @@
       -- SUPER+D é do launcher; tira o workspace de comunicação do caminho.
       kbCommunicationWs = "SUPER + SHIFT + D",
 
+      -- SUPER+U passa a alternar o monitor principal (ui-primary); "tirar do grupo" vai para SUPER+SHIFT+U.
+      kbUngroup = "SUPER + SHIFT + U",
+
       windowGapsOut = 4,
       singleWindowGapsOut = 4,
 
@@ -59,9 +62,35 @@
     -- continua no Ctrl+Shift+Alt+T nativo.
     hl.bind("SUPER + ALT + Return", hl.dsp.exec_cmd("kitty-title"))
 
+    -- SUPER+SHIFT+F: "preenche a tela mantendo a barra". Se a janela estiver flutuante,
+    -- deixa de flutuar e maximiza; se não, alterna maximizado (SUPER+F segue sendo fullscreen).
+    hl.bind("SUPER + SHIFT + F", function()
+      local a = hl.get_active_window()
+      if a and a.floating then
+        hl.dispatch(hl.dsp.window.float())
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized" }))
+      else
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized" }))
+      end
+    end)
+
     -- SUPER+ALT+setas troca de workspace (-1/+1, resgatado do dotfile antigo).
     hl.bind("SUPER + ALT + left", hl.dsp.focus({ workspace = "-1" }))
     hl.bind("SUPER + ALT + right", hl.dsp.focus({ workspace = "+1" }))
+
+    -- Tampa do notebook: switch:on = tampa fechada, switch:off = aberta (testado em runtime com log).
+    -- Fechar: eDP-1 sai do ar e o Hyprland re-aloca os workspaces dele pro monitor externo.
+    -- Abrir: eDP-1 volta no modo preferred (os workspaces ficam onde estão).
+    -- Junto com isso, a barra do shell acompanha: vai para o externo ao fechar e volta ao abrir.
+    hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd(
+      "hyprctl keyword monitor eDP-1,disable; /etc/profiles/per-user/gab/bin/ui-primary lid-close"
+    ))
+    hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd(
+      "hyprctl keyword monitor eDP-1,preferred,auto,1; /etc/profiles/per-user/gab/bin/ui-primary lid-open"
+    ))
+
+    -- SUPER+U: alterna o monitor principal (o outro vira auxiliar, só com apps).
+    hl.bind("SUPER + U", hl.dsp.exec_cmd("/etc/profiles/per-user/gab/bin/ui-primary toggle"))
 
     -- Teclado ABNT2 (o input.lua do Caelestia fixa "us").
     hl.config({
