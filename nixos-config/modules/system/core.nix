@@ -1,6 +1,6 @@
 # Sistema base. Espelho do antigo /etc/nixos/configuration.nix, sem mudar comportamento.
 # Etapa 1: só reorganiza. Customizações entram nas próximas etapas.
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   boot.loader.systemd-boot.enable = true;
@@ -53,15 +53,21 @@
 
     permittedInsecurePackages = [
       "ventoy-1.1.17"
+      "ventoy-1.1.18"
     ];
   };
 
   programs.fish.enable = true;
 
   services.tailscale.enable = true;
+  services.flatpak.enable = true;
 
   networking.firewall.checkReversePath = "loose";
   networking.firewall.allowedUDPPorts = [ 41641 ];
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
+  services.openssh.enable = true;
+  systemd.services.sshd.wantedBy = lib.mkForce [ ];
 
   programs.hyprland = {
     enable = true;
@@ -122,44 +128,14 @@
 
   
   environment.systemPackages = with pkgs; [
-    kdePackages.dolphin
-    vim
-    vscode
-    spotify
-    brave
-    wget
-    zed-editor
-    fastfetch
-    zip
-    btop
+    vim # reserva: root/TTY sem home-manager
+    git # root usa no rebuild (flake é repo git)
     curl
-    git
-    unzip
-    hyprlauncher
-    hyprpolkitagent
-    hyprpicker
-    fuzzel
-    libnotify
-    trash-cli # trash-empty 30 (execs.lua)
-    bibata-cursors # cursor (cursorTheme no hypr-vars.lua)
-    adwaita-icon-theme # ícones dos .desktop (launcher)
-    papirus-icon-theme # ícones de apps (workspaces/barra) — cobre Spotify/Brave/Kitty/VSCode
-    gh
-    powertop # caça-gastadores de bateria
-    gpu-screen-recorder # backend do `caelestia record` (SUPER+ALT+R)
-    glib # gsettings (diagnóstico de tema)
-    dconf # dconf CLI (diagnóstico de tema)
-    reaper
-    anydesk
-    docker
-
-    # Prompt de nome ao abrir kitty (SUPER+Return): Enter vazio = padrão, Esc = cancela.
-    # Fixa o nome na ABA via fish_title (o fish sobrescreveria --title sozinho).
-    (pkgs.writeShellScriptBin "kitty-title" ''
-      t=$(fuzzel --dmenu --prompt "nome: " < /dev/null) || exit 0
-      t=$(printf '%s' "$t" | tr -cd '[:alnum:] _-')
-      if [ -z "$t" ]; then exec kitty; fi
-      exec kitty --title "$t" fish -C "function fish_title; echo $t; end"
-    '')
+    wget
+    anydesk # daemon root + `sudo anydesk --set-password`
+    powertop # via sudo (secure_path não inclui o home)
+    docker # daemon do sistema; CLI p/ todos
+    bibata-cursors
+    adwaita-icon-theme
   ];
 }

@@ -4,7 +4,7 @@
 {
   home.packages = with pkgs; [
     mise
-    # JARVIS: voz + tema instrumental
+    lua-language-server
     espeak-ng
     mpv
     libnotify
@@ -12,21 +12,50 @@
     gcc
     ripgrep
     fd
+    rsync
     lazygit
     wakatime-cli
     code-cursor
-    # Prisma: engines Rust pro `generate` (o npm baixa binários que quebram no NixOS).
-    # Usa o CLI do projeto (npx prisma) + engines daqui. Projetos em 7.x, engines 7.10.
     prisma-engines
-    # Biome tem pacote nativo (sem BO de engines): CLI + VSCode usam o mesmo.
     biome
+    ventoy
+    unzip
+    mission-center
+    kdePackages.dolphin
+    vscode
+    zed-editor
+    android-studio
+    android-tools
+    spotify
+    brave
+    mixing-station
+    reaper
+    fastfetch
+    btop
+    zip
+    trash-cli
+    gh
+    heroic
+    gpu-screen-recorder
+    glib
+    dconf
+    hyprlauncher
+    hyprpolkitagent
+    hyprpicker
+    fuzzel
+    papirus-icon-theme
+    (pkgs.writeShellScriptBin "kitty-title" ''
+      t=$(fuzzel --dmenu --prompt "nome: " < /dev/null) || exit 0
+      t=$(printf '%s' "$t" | tr -cd '[:alnum:] _-')
+      if [ -z "$t" ]; then exec kitty; fi
+      exec kitty --title "$t" fish -C "function fish_title; echo $t; end"
+    '')
   ];
 
   home.sessionVariables = {
     PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
   };
 
-  # "Rebuild NixOS" para o commands do launcher
   xdg.desktopEntries.nixos-rebuild = {
     name = "Rebuild NixOS";
     comment = "Aplica o flake versionado (switch + reload)";
