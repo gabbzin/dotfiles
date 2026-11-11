@@ -62,6 +62,21 @@
       color15 #ebebff
 
       map ctrl+backspace send_text all \x17
+
+      # Ir direto para a aba N com Ctrl+número (estilo navegador). Splits ficam com o tmux.
+      map ctrl+1 goto_tab 1
+      map ctrl+2 goto_tab 2
+      map ctrl+3 goto_tab 3
+      map ctrl+4 goto_tab 4
+      map ctrl+5 goto_tab 5
+      map ctrl+6 goto_tab 6
+      map ctrl+7 goto_tab 7
+      map ctrl+8 goto_tab 8
+      map ctrl+9 goto_tab 9
+
+      # Ciclar abas (Ctrl+Tab / Ctrl+Shift+Tab)
+      map ctrl+tab next_tab
+      map ctrl+shift+tab previous_tab
     '';
   };
 }
