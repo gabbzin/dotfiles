@@ -6,6 +6,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Kernel mais recente (amdgpu novo p/ Radeon 680M). Para voltar ao LTS, remover esta linha.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Sao_Paulo";
