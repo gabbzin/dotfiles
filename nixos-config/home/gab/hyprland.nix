@@ -75,8 +75,10 @@
     end)
 
     -- SUPER+ALT+setas troca de workspace (-1/+1, resgatado do dotfile antigo).
-    hl.bind("SUPER + ALT + left", hl.dsp.focus({ workspace = "-1" }))
-    hl.bind("SUPER + ALT + right", hl.dsp.focus({ workspace = "+1" }))
+    -- (wsstep parte do monitor principal, então funciona mesmo com o foco no auxiliar.)
+    local fn = require("utils.functions")
+    hl.bind("SUPER + ALT + left", fn.wsstep("focus", -1))
+    hl.bind("SUPER + ALT + right", fn.wsstep("focus", 1))
 
     -- Tampa do notebook: switch:on = tampa fechada, switch:off = aberta (testado em runtime com log).
     -- Fechar: eDP-1 sai do ar e o Hyprland re-aloca os workspaces dele pro monitor externo.
@@ -95,6 +97,12 @@
 
     -- SUPER+U: alterna o monitor principal (o outro vira auxiliar, só com apps).
     hl.bind("SUPER + U", hl.dsp.exec_cmd("/etc/profiles/per-user/gab/bin/ui-primary toggle"))
+
+    -- Foco/workspace em outro monitor não pode teleportar o mouse (os atalhos de workspace
+    -- agem no monitor principal mesmo com o mouse no auxiliar).
+    hl.config({
+      cursor = { no_warps = true },
+    })
 
     -- Teclado ABNT2 (o input.lua do Caelestia fixa "us").
     hl.config({

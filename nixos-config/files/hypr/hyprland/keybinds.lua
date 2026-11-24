@@ -89,16 +89,16 @@ for i = 1, 10 do
 end
 
 -- Go to workspace -1/+1
-create_bind(vars.kbPrevWs, hl.dsp.focus({ workspace = "-1" }), repeating_unless_mouse)
-create_bind(vars.kbNextWs, hl.dsp.focus({ workspace = "+1" }), repeating_unless_mouse)
+create_bind(vars.kbPrevWs, fn.wsstep("focus", -1), repeating_unless_mouse)
+create_bind(vars.kbNextWs, fn.wsstep("focus", 1), repeating_unless_mouse)
 
 -- Go to workspace group -1/+1
-create_bind(vars.kbPrevWsGroup, hl.dsp.focus({ workspace = "-10" }), repeating_unless_mouse)
-create_bind(vars.kbNextWsGroup, hl.dsp.focus({ workspace = "+10" }), repeating_unless_mouse)
+create_bind(vars.kbPrevWsGroup, fn.wsstep("focus", -10), repeating_unless_mouse)
+create_bind(vars.kbNextWsGroup, fn.wsstep("focus", 10), repeating_unless_mouse)
 
 -- Move window to workspace -1/+1
-create_bind(vars.kbMoveWinToWsNext, hl.dsp.window.move({ workspace = "+1" }), repeating_unless_mouse)
-create_bind(vars.kbMoveWinToWsPrev, hl.dsp.window.move({ workspace = "-1" }), repeating_unless_mouse)
+create_bind(vars.kbMoveWinToWsNext, fn.wsstep("move", 1), repeating_unless_mouse)
+create_bind(vars.kbMoveWinToWsPrev, fn.wsstep("move", -1), repeating_unless_mouse)
 
 -- Move window to/from special workspace
 create_bind(vars.kbMoveWinToWsSpecial, hl.dsp.window.move({ workspace = "special:special" }))
@@ -114,17 +114,20 @@ create_bind(vars.kbUngroup, hl.dsp.window.move({ out_of_group = true }))
 create_bind(vars.kbGroupLockActive, hl.dsp.group.lock_active())
 
 -- Window actions
--- DIVERGÊNCIA NixOS (seu hábito): SUPER+SHIFT+Left/Right move o app de
--- workspace (-1/+1) em vez de mover na direção (upstream). Up/Down mantêm
--- o comportamento original.
+-- DIVERGÊNCIA NixOS (hábito do GNOME/Fedora):
+--   SUPER+SHIFT+Left/Right      move a janela para o monitor da esquerda/direita
+--   SUPER+SHIFT+ALT+Left/Right  move a janela para o workspace anterior/próximo (e vai junto)
+-- Up/Down mantêm o comportamento original do upstream.
 for _, dir in ipairs({ "left", "right", "up", "down" }) do
     create_bind("SUPER + " .. dir, hl.dsp.focus({ direction = dir }))
 end
 for _, dir in ipairs({ "up", "down" }) do
     create_bind("SUPER + SHIFT + " .. dir, hl.dsp.window.move({ direction = dir }))
 end
-create_bind("SUPER + SHIFT + left", hl.dsp.window.move({ workspace = "-1" }))
-create_bind("SUPER + SHIFT + right", hl.dsp.window.move({ workspace = "+1" }))
+create_bind("SUPER + SHIFT + left", hl.dsp.window.move({ monitor = "l" }))
+create_bind("SUPER + SHIFT + right", hl.dsp.window.move({ monitor = "r" }))
+create_bind("SUPER + SHIFT + ALT + left", fn.wsstep("move", -1))
+create_bind("SUPER + SHIFT + ALT + right", fn.wsstep("move", 1))
 
 create_bind(vars.kbWindowDecreaseWidth, fn.resize_active_window(-10, 0), repeating)
 create_bind(vars.kbWindowIncreaseWidth, fn.resize_active_window(10, 0), repeating)

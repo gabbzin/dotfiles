@@ -1,12 +1,37 @@
+local primary = require("utils.primary")
+
+-- Id do workspace de referência: sempre o do monitor principal, mesmo com o foco (ou o
+-- mouse) no auxiliar. Sem isso, os atalhos de workspace calculariam a partir do "ext".
+local function base_workspace_id()
+    local id = primary.active_workspace_id()
+    if id then return id end
+    local activews = hl.get_active_workspace()
+    return activews and activews.id or nil
+end
+
 local function wsaction(action, range, i)
     return function()
-        local activews = hl.get_active_workspace()
-        if activews then
-            local id = activews.id
+        local id = base_workspace_id()
+        if id then
             local s  = (i - 1) * 10 + (id % 10)
             local t  = math.floor((id - 1) / 10) * 10 + i
             local z  = (range == "group") and s or t
 
+            if action == "move" then
+                return hl.dispatch(hl.dsp.window.move({ workspace = z }))
+            else
+                return hl.dispatch(hl.dsp.focus({ workspace = z }))
+            end
+        end
+    end
+end
+
+-- Anterior/próximo (delta = -1/+1, ou -10/+10 para grupos) a partir do monitor principal.
+local function wsstep(action, delta)
+    return function()
+        local id = base_workspace_id()
+        if id then
+            local z = math.max(1, id + delta)
             if action == "move" then
                 return hl.dispatch(hl.dsp.window.move({ workspace = z }))
             else
@@ -300,6 +325,7 @@ return {
     resize_by_screen     = resize_by_screen,
     resize_active_window = resize_active_window,
     wsaction             = wsaction,
+    wsstep               = wsstep,
     move_actions         = move_actions,
     toggle               = toggle,
 }
