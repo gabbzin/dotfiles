@@ -194,6 +194,26 @@ in
         # Arquivos novos da barra do topo (a seleção da variante vem de ~/.local/state/caelestia/ui-variant).
         cp ${../../files/caelestia/UiVariant.qml} services/UiVariant.qml
         cp ${../../files/caelestia/TopBar.qml} modules/bar/TopBar.qml
+      # Os workspaces acompanham o monitor principal: numerados vão para ele, o "ext"
+      # (workspace do auxiliar, ver hyprland/rules.lua) vai para o outro monitor ativo.
+      # Só roda com um principal definido ("all" não mexe em nada).
+      if [ -n "$target" ]; then
+        mapfile -t active < <(hyprctl monitors -j | jq -r '.[].name')
+        other=""
+        for m in "''${active[@]}"; do [ "$m" = "$target" ] || other="$m"; done
+        if printf '%s\n' "''${active[@]}" | grep -qx "$target"; then
+          while read -r id name; do
+            if [ "$name" = ext ]; then
+              [ -z "$other" ] || hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$other\" })" >/dev/null
+            else
+              hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$target\" })" >/dev/null
+            fi
+          done < <(hyprctl workspaces -j | jq -r '.[] | select(.name | startswith("special:") | not) | "\(.id) \(.name)"')
+          # Devolve o foco ao principal, que é onde o usuário está trabalhando.
+          hyprctl dispatch "hl.dsp.focus({ monitor = \"$target\" })" >/dev/null || true
+        fi
+      fi
+
         cp ${../../files/caelestia/TopWorkspaces.qml} modules/bar/components/TopWorkspaces.qml
 
         cp ${../../files/caelestia/BatteryStatus.qml} modules/bar/components/status/BatteryStatus.qml

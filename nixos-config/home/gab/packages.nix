@@ -5,6 +5,7 @@
   home.packages = with pkgs; [
     mise
     lua-language-server
+    lua5_4 # `lua`/`luac` para checar a sintaxe da config do Hyprland (luac -p)
     espeak-ng
     mpv
     libnotify

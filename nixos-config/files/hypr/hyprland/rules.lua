@@ -204,6 +204,43 @@ create_tag(todo_app_tag, { workspace = "special:todo" })
 hl.workspace_rule({ workspace = "w[tv1]s[false]", gaps_out = vars.singleWindowGapsOut })
 hl.workspace_rule({ workspace = "f[1]s[false]", gaps_out = vars.singleWindowGapsOut })
 
+-- Comportamento "workspaces só no monitor primário" (estilo GNOME/Fedora):
+-- os workspaces numerados (e os grupos de 10) ficam presos ao notebook, e o
+-- outro monitor tem um workspace fixo próprio ("ext"), que não muda quando
+-- você troca de workspace. Janelas continuam em tiling normal nos dois.
+-- Quem é o principal vem do mesmo estado do SUPER+U (ui-primary): o monitor cujo
+-- shell.json NÃO está com "enabled": false. Sem estado ou com "todos", o notebook.
+local internal_monitor, external_monitor = "eDP-1", "HDMI-A-1"
+
+local function is_aux(name)
+    local f = io.open(os.getenv("HOME") .. "/.config/caelestia/monitors/" .. name .. "/shell.json", "r")
+    if not f then return false end
+    local content = f:read("*a")
+    f:close()
+    return content:find('"enabled"%s*:%s*false') ~= nil
+end
+
+local primary_monitor, secondary_monitor = internal_monitor, external_monitor
+if is_aux(internal_monitor) and not is_aux(external_monitor) then
+    primary_monitor, secondary_monitor = external_monitor, internal_monitor
+end
+
+for i = 1, 50 do
+    hl.workspace_rule({
+        workspace  = tostring(i),
+        monitor    = primary_monitor,
+        persistent = i <= 10,
+        default    = i == 1,
+    })
+end
+
+hl.workspace_rule({
+    workspace  = "name:ext",
+    monitor    = secondary_monitor,
+    persistent = true,
+    default    = true,
+})
+
 
 ---------------------
 ---- Layer rules ----
