@@ -217,7 +217,7 @@ let
       notify-send -t 2000 "Monitor principal" "''${target:-todos}" || true
     '';
   };
-  # Atalho do "manter acordado" (SUPER+SHIFT+I): alterna o IdleInhibitor do Caelestia via IPC
+  # Atalho do "manter acordado" (SUPER+SHIFT+I): alterna o inibidor de ociosidade do Caelestia via IPC
   # e avisa o novo estado (a barra mostra o ícone, mas o aviso ajuda quando o jogo está em tela cheia).
   keepAwake = pkgs.writeShellApplication {
     name = "keep-awake";
