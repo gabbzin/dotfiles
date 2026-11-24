@@ -198,6 +198,21 @@ local function shell_join(argv) -- uhh praise danny for this
     return table.concat(quoted, " ")
 end
 
+-- Notificação ao entrar/sair de um special workspace ("modo").
+-- Ícones são emoji no texto (o notify daemon do shell estiliza título+corpo).
+local mode_notifs = {
+    music         = { icon = "🎵", label = "Modo música" },
+    communication = { icon = "💬", label = "Modo mensagens" },
+    todo          = { icon = "✅", label = "Modo todo" },
+}
+
+local function notify_mode(special_workspace, entering)
+    local mode = mode_notifs[special_workspace] or
+        { icon = "⭐", label = "Modo " .. tostring(special_workspace) }
+    hl.exec_cmd("notify-send -t 2000 " ..
+        shell_join({ mode.icon .. " " .. mode.label, entering and "ativado" or "saiu" }))
+end
+
 -- Merge user config with defaults
 local function load_toggle_config()
     local config = default_config()
@@ -275,6 +290,8 @@ local function toggle(special_workspace)
         if on_correct_ws then
             hl.dispatch(hl.dsp.workspace.toggle_special(special_workspace))
         end
+
+        notify_mode(special_workspace, not on_correct_ws)
     end
 end
 

@@ -38,20 +38,30 @@ in
     wireplumber.enable = true;
   };
 
-  # Bluetooth: nasce presente mas DESLIGADO (powerOnBoot religaria sozinho;
-  # powerOnBoot=false bloqueia via rfkill e o toggle da barra não desfaz).
+  # Bluetooth: sempre ligado no boot. Já tentamos um bluetooth-power-off.service
+  # (bluetoothctl power off no boot), mas o chip RTL8852BU tem um bug conhecido:
+  # desligar o controlador via software derruba o rádio do barramento USB
+  # (~20s depois), e aí o toggle da barra não recupera o adaptador. Em idle, sem
+  # nada conectado, o rádio entra em modo de baixo consumo por conta própria.
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
   };
-  systemd.services.bluetooth-power-off = {
-    description = "Desliga o bluetooth no boot (liga só pelo toggle)";
-    after = [ "bluetooth.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.Type = "oneshot";
-    script = "${pkgs.bluez}/bin/bluetoothctl power off";
-  };
   services.blueman.enable = true;
+  nixpkgs.overlays = [
+    (final: prev: {
+      blueman = prev.blueman.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          substituteInPlace blueman/plugins/applet/ConnectionNotifier.py \
+            --replace-fail 'notification.set_notification_icon("battery")' 'pass'
+        '';
+      });
+    })
+  ];
+
+  # Tampa fechada na tomada: só bloqueia, não suspende (os processos seguem rodando).
+  # Na bateria continua suspendendo. Com monitor externo ("docked") o padrão já é ignorar.
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "lock";
 
   # Digital (ELAN 04f3:0c8c): login por senha (SDDM) + sudo com digital.
   # Se fprintd-enroll disser "no devices", ligar tod: services.fprintd.tod.enable = true.

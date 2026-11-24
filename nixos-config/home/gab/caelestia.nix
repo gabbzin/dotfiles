@@ -21,11 +21,34 @@ let
     # Sem moldura na tela: só a barra lateral.
     border.thickness = 0;
     border.rounding = 0;
+    # Bluetooth: um ícone só. Ativo o Status da própria barra (abre popout de
+    # conexões); o ícone de tray do blueman-applet fica escondido (o applet
+    # continua rodando como agente de pareamento).
+    bar.statusIcons = [
+      { id = "lockStatus"; enabled = true; }
+      { id = "audio"; enabled = false; }
+      { id = "microphone"; enabled = false; }
+      { id = "kbLayout"; enabled = false; }
+      # Manter acordado (caffeine): id próprio deste fork, ver KeepAwakeStatus.qml.
+      { id = "idleInhibitor"; enabled = true; }
+      { id = "network"; enabled = true; }
+      { id = "bluetooth"; enabled = true; }
+      { id = "battery"; enabled = true; }
+    ];
+    bar.tray.hiddenIcons = [ "blueman" "blueman-tray" ];
     # TRIAGE crash do dashboard: aba de mídia religada a pedido; se o
     # SIGKILL voltar ao abrir o painel, o gatilho é o widget de mídia.
     dashboard.showMedia = true;
     # Dashboard religado (precisa do % da bateria); crash em investigação.
     dashboard.enabled = true;
+    # Ocioso: os mesmos passos do padrão do Caelestia (bloqueia em 3 min, apaga a tela em 5),
+    # mas a suspensão dos 10 min só vale na bateria. Na tomada, a tela bloqueia e apaga e os
+    # processos seguem rodando. A lista substitui a padrão inteira, por isso repete as três etapas.
+    general.idle.timeouts = [
+      { timeout = 180; idleAction = "lock"; }
+      { timeout = 300; idleAction = "dpms off"; returnAction = "dpms on"; }
+      { timeout = 600; idleAction = [ "suspendThenHibernate" ]; inhibitWhenCharging = true; }
+    ];
   };
 
   # Glass: superfícies do shell translúcidas (o Caelestia liga o blur do
@@ -92,9 +115,12 @@ let
     name = "ui-primary";
     runtimeInputs = [ pkgs.coreutils pkgs.jq pkgs.hyprland pkgs.libnotify ];
     text = ''
-      # ui-primary [status|toggle|all|<monitor>|lid-close|lid-open]
+      # ui-primary [status|toggle|all|<monitor>|lid-close|lid-open|ensure]
       # lid-close/lid-open são chamados pelo atalho da tampa: ao fechar, a barra vai para
       # o monitor externo (se houver); ao abrir, volta ao que estava antes.
+      # ensure é chamado pelo watcher (ui-primary-watch): se nenhum monitor conectado
+      # estiver como principal (ex.: o externo que era principal foi desconectado),
+      # devolve a barra para todos — sem isso a tela fica sem barra nenhuma.
       dir="$HOME/.config/caelestia/monitors"
       saved="$HOME/.local/state/caelestia/primary-before-lid"
 
@@ -120,6 +146,11 @@ let
               if [ "''${mons[$i]}" = "''${current[0]}" ]; then target="''${mons[$(( (i + 1) % ''${#mons[@]} ))]}"; fi
             done
           fi ;;
+        ensure)
+          # Nenhum monitor conectado é o principal (o principal foi desconectado):
+          # devolve a barra para todos os conectados. Caso normal: não faz nada.
+          [ "''${#current[@]}" -gt 0 ] && exit 0
+          target="" ;;
         all) target="" ;;
         lid-close)
           # Primeiro monitor que não é a tela interna (eDP/LVDS/DSI); sem externo, não há o que mover.
@@ -163,7 +194,63 @@ let
         fi
       done
 
+      # Os workspaces acompanham o monitor principal: numerados vão para ele, o "ext"
+      # (workspace do auxiliar, ver hyprland/rules.lua) vai para o outro monitor ativo.
+      # Só roda com um principal definido ("all" não mexe em nada).
+      if [ -n "$target" ]; then
+        mapfile -t active < <(hyprctl monitors -j | jq -r '.[].name')
+        other=""
+        for m in "''${active[@]}"; do [ "$m" = "$target" ] || other="$m"; done
+        if printf '%s\n' "''${active[@]}" | grep -qx "$target"; then
+          while read -r id name; do
+            if [ "$name" = ext ]; then
+              [ -z "$other" ] || hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$other\" })" >/dev/null
+            else
+              hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$target\" })" >/dev/null
+            fi
+          done < <(hyprctl workspaces -j | jq -r '.[] | select(.name | startswith("special:") | not) | "\(.id) \(.name)"')
+          # Devolve o foco ao principal, que é onde o usuário está trabalhando.
+          hyprctl dispatch "hl.dsp.focus({ monitor = \"$target\" })" >/dev/null || true
+        fi
+      fi
+
       notify-send -t 2000 "Monitor principal" "''${target:-todos}" || true
+    '';
+  };
+  # Atalho do "manter acordado" (SUPER+SHIFT+I): alterna o IdleInhibitor do Caelestia via IPC
+  # e avisa o novo estado (a barra mostra o ícone, mas o aviso ajuda quando o jogo está em tela cheia).
+  keepAwake = pkgs.writeShellApplication {
+    name = "keep-awake";
+    runtimeInputs = [ pkgs.coreutils pkgs.libnotify ];
+    text = ''
+      # keep-awake [toggle|on|off|status]
+      ipc() { qs -c caelestia ipc call idleInhibitor "$@"; }
+      case "''${1:-toggle}" in
+        toggle) ipc toggle ;;
+        on) ipc enable ;;
+        off) ipc disable ;;
+        status) ipc isEnabled; exit 0 ;;
+        *) echo "uso: keep-awake [toggle|on|off|status]" >&2; exit 1 ;;
+      esac
+      if [ "$(ipc isEnabled)" = true ]; then
+        notify-send -t 2000 "Manter acordado" "ligado: a tela não bloqueia nem apaga" || true
+      else
+        notify-send -t 2000 "Manter acordado" "desligado: gerenciamento de energia normal" || true
+      fi
+    '';
+  };
+
+  # Watcher do ui-primary: se o monitor principal é desconectado, ninguém devolve a
+  # barra pro monitor que sobrou (shell.json dele fica com "enabled": false) e a tela
+  # fica sem barra nenhuma. Esse loop roda `ui-primary ensure` de tempos em tempos.
+  uiPrimaryWatch = pkgs.writeShellApplication {
+    name = "ui-primary-watch";
+    runtimeInputs = [ pkgs.coreutils uiPrimary ];
+    text = ''
+      while true; do
+        ui-primary ensure || true
+        sleep 5
+      done
     '';
   };
 in
@@ -194,29 +281,24 @@ in
         # Arquivos novos da barra do topo (a seleção da variante vem de ~/.local/state/caelestia/ui-variant).
         cp ${../../files/caelestia/UiVariant.qml} services/UiVariant.qml
         cp ${../../files/caelestia/TopBar.qml} modules/bar/TopBar.qml
-      # Os workspaces acompanham o monitor principal: numerados vão para ele, o "ext"
-      # (workspace do auxiliar, ver hyprland/rules.lua) vai para o outro monitor ativo.
-      # Só roda com um principal definido ("all" não mexe em nada).
-      if [ -n "$target" ]; then
-        mapfile -t active < <(hyprctl monitors -j | jq -r '.[].name')
-        other=""
-        for m in "''${active[@]}"; do [ "$m" = "$target" ] || other="$m"; done
-        if printf '%s\n' "''${active[@]}" | grep -qx "$target"; then
-          while read -r id name; do
-            if [ "$name" = ext ]; then
-              [ -z "$other" ] || hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$other\" })" >/dev/null
-            else
-              hyprctl dispatch "hl.dsp.workspace.move({ id = $id, monitor = \"$target\" })" >/dev/null
-            fi
-          done < <(hyprctl workspaces -j | jq -r '.[] | select(.name | startswith("special:") | not) | "\(.id) \(.name)"')
-          # Devolve o foco ao principal, que é onde o usuário está trabalhando.
-          hyprctl dispatch "hl.dsp.focus({ monitor = \"$target\" })" >/dev/null || true
-        fi
-      fi
-
         cp ${../../files/caelestia/TopWorkspaces.qml} modules/bar/components/TopWorkspaces.qml
 
         cp ${../../files/caelestia/BatteryStatus.qml} modules/bar/components/status/BatteryStatus.qml
+
+        # Ícone "manter acordado" (caffeine) nos status da barra. A TopBar (glass) já traz o
+        # delegate no arquivo próprio; na barra lateral o delegate entra logo após o `role: "id"`
+        # (âncora de uma linha só; se o upstream mudar, --replace-fail derruba o build).
+        cp ${../../files/caelestia/KeepAwakeStatus.qml} modules/bar/components/status/KeepAwakeStatus.qml
+        substituteInPlace modules/bar/components/StatusIcons.qml \
+          --replace-fail 'role: "id"' 'role: "id"
+                DelegateChoice {
+                    roleValue: "idleInhibitor"
+                    delegate: EntryWrapper {
+                        KeepAwakeStatus {
+                            colour: root.colour
+                        }
+                    }
+                }'
 
         # Monitor auxiliar (ui-primary): sem barra/painéis, mas COM papel de parede.
         # O wallpaper usava Screens.screens (já filtrada por `enabled`); passa a usar todas as telas.
@@ -235,7 +317,26 @@ in
     lib.nameValuePair "caelestia/variants/${name}.json" { text = builtins.toJSON settings; }
   ) variants;
 
-  home.packages = [ uiVariant uiPrimary ];
+  home.packages = [ uiVariant uiPrimary keepAwake ];
+
+  # O plugin qtengine não chega ao Quickshell, então o Qt cairia no tema hicolor
+  # (ícones de notificação quebrados). QS_ICON_THEME força o tema.
+  systemd.user.services.caelestia.Service.Environment = [ "QS_ICON_THEME=Papirus-Dark" ];
+
+  # Mantém a barra viva mesmo se o monitor principal sumir (ver uiPrimaryWatch).
+  systemd.user.services.ui-primary-watch = {
+    Unit = {
+      Description = "Recoloca a barra num monitor conectado quando o principal some";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${uiPrimaryWatch}/bin/ui-primary-watch";
+      Restart = "always";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 
   # A cada rebuild, regrava o shell.json a partir da variante ativa (fonte da verdade = Nix).
   home.activation.caelestiaShellJson = lib.hm.dag.entryAfter [ "linkGeneration" ] ''

@@ -1,5 +1,5 @@
 # Home do gab. Só importa os módulos. Otimização global de pkgs fica aqui.
-{ caelestia-shell, ... }:
+{ caelestia-shell, claude-desktop, ... }:
 
 {
   home-manager.useGlobalPkgs = true;
@@ -11,6 +11,7 @@
       ./caelestia.nix
       ./hyprland.nix
       ./fish.nix
+      ./terminal.nix
       ./kitty.nix
       ./nvim.nix
       ./editors.nix
@@ -19,5 +20,5 @@
     ];
   };
 
-  home-manager.extraSpecialArgs = { inherit caelestia-shell; };
+  home-manager.extraSpecialArgs = { inherit caelestia-shell claude-desktop; };
 }

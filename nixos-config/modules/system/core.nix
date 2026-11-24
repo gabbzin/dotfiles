@@ -33,6 +33,7 @@
   console.keyMap = "br-abnt2";
 
   virtualisation.docker.enable = true;
+  virtualisation.virtualbox.host.enable = true;
 
   users.users."gab" = {
     isNormalUser = true;
@@ -41,6 +42,7 @@
       "networkmanager"
       "wheel"
       "docker"
+      "vboxusers"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.fish;
@@ -138,6 +140,22 @@
     anydesk # daemon root + `sudo anydesk --set-password`
     powertop # via sudo (secure_path não inclui o home)
     docker # daemon do sistema; CLI p/ todos
+    # O pty.node (node-pty) do pacote vem sem libstdc++ no RUNPATH → o servidor
+    # morre em loop e a janela nunca abre. Wrapper injeta a lib (sem rebuild).
+    # (t3code é um symlinkJoin: overrideAttrs no postBuild é ignorado, por isso
+    # embrulhamos num symlinkJoin nosso.)
+    (symlinkJoin {
+      name = "t3code-${t3code.version}";
+      paths = [ t3code ];
+      nativeBuildInputs = [ makeBinaryWrapper ];
+      postBuild = ''
+        for program in "$out/bin"/*; do
+          wrapProgram "$program" --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ stdenv.cc.cc.lib ]}
+        done
+      '';
+    })
+    antigravity-ide
+    antigravity-cli
     bibata-cursors
     adwaita-icon-theme
   ];

@@ -1,0 +1,50 @@
+                    ═══ TMUX — cheat sheet (prefixo: Ctrl+a) ═══
+
+  Sessões
+  ─────────────────────────────────────────────────────────────────────────
+  tm                        Entrar/reatar na sessão 'main' (fora do tmux)
+  prefix d                  Sair (detach) — sessão continua rodando
+  prefix s                  Listar sessões (trocar)
+  prefix $                  Renomear sessão
+  prefix c                  Nova janela        prefix ,   Renomear janela
+  prefix w                  Listar janelas
+  prefix &                  Fechar janela
+
+  Panes (splits)
+  ─────────────────────────────────────────────────────────────────────────
+  prefix |                  Split lado a lado
+  prefix -                  Split topo/baixo
+  prefix h j k l            Navegar entre panes (estilo vim)
+  prefix x                  Fechar pane
+  prefix z                  Zoom (pane em tela cheia)
+  prefix o                  Alternar pane
+  prefix Space              Trocar layout dos panes
+  prefix {  /  }            Mover pane p/ trás / frente
+  Alt + setas               (não configurado; use prefix h/j/k/l)
+
+  Copiar / Colar (mouse ligado)
+  ─────────────────────────────────────────────────────────────────────────
+  Mouse arrastar + copy     Copiar direto pro Wayland (wl-clipboard)
+  prefix [                  Modo copiar (navega com hjkl, v seleciona, y copia)
+  prefix ]                  Colar último buffer
+
+  Sessões persistentes (resurrect + continuum)
+  ─────────────────────────────────────────────────────────────────────────
+  prefix Ctrl+s             Salvar sessões agora
+  prefix Ctrl+r             Restaurar sessões
+  (autosave a cada 15 min; sobrevive a reiniciar o kitty/PC)
+
+  Ajuda
+  ─────────────────────────────────────────────────────────────────────────
+  F1                        Este cheat sheet (popup)
+  prefix ?                  Lista TODOS os atalhos ativos (list-keys)
+  prefix                    (depois de apertar o prefixo, abre menu interativo)
+
+  Fish — fora do tmux
+  ─────────────────────────────────────────────────────────────────────────
+  tmux-help                 Este cheat sheet
+  Ctrl+R                    Histórico fuzzy do shell
+  Ctrl+T                    Busca fuzzy de arquivos (fd)
+  z <pasta>                 Pular pra pasta visitada (zoxide)
+  ll / la / tree            ls moderno (eza, com status git)
+  work                      Escolher projeto de ~/GitHub com fzf

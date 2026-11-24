@@ -42,6 +42,10 @@
   "git_panel": {
     "dock": "left",
   },
+  // Blame (equivalente à parte útil do GitLens)
+  "git_blame": {
+    "show_commit_summary": true,
+  },
   "agent": {
     "tool_permissions": {
       "tools": {
@@ -94,6 +98,33 @@
     "diagnostics": false,
     "metrics": false,
   },
+  // --- IA ---
+  "features": {
+    "copilot": true,
+  },
+  // Extensions que o Zed instala sozinho no próximo boot
+  "auto_install_extensions": {
+    "wakatime": true,
+    "context7": true,
+  },
+  // --- Performance (equivale aos watcherExclude/search.exclude do VSCode) ---
+  "file_scan_exclusions": [
+    "**/node_modules",
+    "**/dist",
+    "**/target",
+  ],
+  // --- File nesting (equivalente ao explorer.fileNesting do VSCode) ---
+  "file_nesting": {
+    "hide_files": false,
+    "patterns": {
+      "*.js": ["*.cjs", "*.mjs", "*.d.ts", "*.test.js", "*.spec.js"],
+      "*.ts": ["*.d.ts", "*.test.ts", "*.spec.ts"],
+      "*.jsx": ["*.test.jsx", "*.spec.jsx"],
+      "*.tsx": ["*.test.tsx", "*.spec.tsx"],
+      "*.css": ["*.css.map"],
+      "package.json": ["package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock"],
+    },
+  },
   "project_panel": {
     "dock": "left",
     "auto_fold_dirs": false,
@@ -115,6 +146,11 @@
     "monospace"
   ],
   "semantic_tokens": "combined",
+  // Error Lens style: diagnostic inline na linha
+  "inline_diagnostics": {
+    "cursorline": "enabled",
+    "other_lines": "enabled",
+  },
   "soft_wrap": "editor_width",
   "tab_size": 2,
   "ui_font_size": 16,
@@ -125,8 +161,14 @@
     "dark": "GitHub Dark Colorblind",
   },
   "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
     "github-copilot-cli": {
       "type": "registry"
+    },
+    "github-copilot-chat": {
+      "type": "registry",
     },
     "OpenCode": {
       "default_config_options": {

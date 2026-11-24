@@ -7,7 +7,6 @@
   "workbench.activityBar.location": "top",
   // --- Editor ---
   "editor.fontFamily": "'Cascadia Code', monospace",
-  "editor.fontSize": 13,
   "editor.fontLigatures": true,
   "editor.tabSize": 2,
   "editor.wordWrap": "on",
@@ -50,5 +49,6 @@
   "redhat.telemetry.enabled": false,
   "window.newWindowProfile": "Default",
   "terminal.integrated.fontSize": 13,
-  "js/ts.updateImportsOnFileMove.enabled": "always"
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "claudeCode.preferredLocation": "panel"
 }

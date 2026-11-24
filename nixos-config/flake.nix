@@ -18,6 +18,11 @@
       url = "github:Darkkal44/qylock";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    claude-desktop = {
+      # Reempacota o .deb oficial da Anthropic (mantido, atualizado com frequência).
+      url = "github:aaddrick/claude-desktop-debian";
+    };
   };
 
   outputs =
@@ -27,6 +32,7 @@
       home-manager,
       caelestia-shell,
       qylock,
+      claude-desktop,
       ...
     }:
     {
@@ -36,7 +42,7 @@
           ./hosts/nixos/default.nix
           qylock.nixosModules.default
         ];
-        specialArgs = { inherit home-manager caelestia-shell; };
+        specialArgs = { inherit home-manager caelestia-shell claude-desktop; };
       };
     };
 }

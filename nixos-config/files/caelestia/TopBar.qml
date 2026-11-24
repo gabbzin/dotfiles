@@ -197,6 +197,14 @@ Item {
                         }
                     }
                     DelegateChoice {
+                        roleValue: "idleInhibitor"
+                        delegate: EntryWrapper {
+                            KeepAwakeStatus {
+                                colour: root.statusColour
+                            }
+                        }
+                    }
+                    DelegateChoice {
                         roleValue: "network"
                         delegate: EntryWrapper {
                             MaterialIcon {

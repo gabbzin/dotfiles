@@ -25,8 +25,8 @@
       kbLauncher = "SUPER + D",
       kbTerminal = { "SUPER + Return", "SUPER + T" },
       kbCloseWindow = "SUPER + Q",
-      -- SUPER+D é do launcher; tira o workspace de comunicação do caminho.
-      kbCommunicationWs = "SUPER + SHIFT + D",
+      -- SUPER+D é do launcher (não mexe); modo de mensagens vai para SUPER+G.
+      kbCommunicationWs = "SUPER + G",
 
       -- SUPER+U passa a alternar o monitor principal (ui-primary); "tirar do grupo" vai para SUPER+SHIFT+U.
       kbUngroup = "SUPER + SHIFT + U",
@@ -88,6 +88,10 @@
     hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd(
       "hyprctl keyword monitor eDP-1,preferred,auto,1; /etc/profiles/per-user/gab/bin/ui-primary lid-open"
     ))
+
+    -- SUPER+SHIFT+I: liga/desliga o "manter acordado" (caffeine): tela sem bloquear/apagar
+    -- (o ícone de café na barra mostra o estado). Caminho absoluto: o Hyprland não herda o PATH do fish.
+    hl.bind("SUPER + SHIFT + I", hl.dsp.exec_cmd("/etc/profiles/per-user/gab/bin/keep-awake toggle"))
 
     -- SUPER+U: alterna o monitor principal (o outro vira auxiliar, só com apps).
     hl.bind("SUPER + U", hl.dsp.exec_cmd("/etc/profiles/per-user/gab/bin/ui-primary toggle"))

@@ -15,6 +15,7 @@
 
     interactiveShellInit = ''
       set -g fish_greeting ""
+      complete -c cli -f -n __fish_use_subcommand -a "claude opencode google copilot"
       fish_add_path "$HOME/.local/bin"
 
       ${pkgs.mise}/bin/mise activate fish | source
@@ -53,9 +54,17 @@
       sshd-start = "echo 'Iniciando o sshd chefe'; sudo systemctl start sshd";
       sshd-stop = "echo 'Parando o sshd'; sudo systemctl stop sshd";
       sshd-status = "systemctl status sshd";
+      cat = "bat --style=plain";
+      tmux-help = "bat --style=plain --paging=always ~/.config/tmux/cheatsheet.txt";
     };
 
     functions = {
+      # tmux: anexa à sessão 'main' (cria se não existir)
+      tm = {
+        description = "tmux: anexa à sessão 'main' ou cria";
+        body = "tmux new-session -A -s main";
+      };
+
       rebuild = {
         description = "Aplica o flake versionado (switch + reload + restart shell)";
         body = ''
@@ -110,6 +119,42 @@
             ipv4.dns "$servers" ipv4.ignore-auto-dns yes
 
           and sudo nmcli connection up "$connection"
+        '';
+      };
+
+      cli = {
+        description = "Abre um agente CLI: cli [claude|opencode|google|copilot] [args...]";
+        body = ''
+          set -l alvo $argv[1]
+          set -e argv[1]
+          set -l uso "Uso: cli [claude|opencode|google|copilot] [args...]"
+
+          # Valida antes de chamar: mensagem clara se o agente não estiver instalado.
+          function __cli_run
+            if not command -q $argv[1]
+              echo "cli: '$argv[1]' não encontrado no PATH (instale ou use outro agente)" >&2
+              return 127
+            end
+            $argv
+          end
+
+          switch "$alvo"
+            case claude
+              __cli_run claude $argv
+            case opencode
+              __cli_run opencode $argv
+            case google antigravity agy
+              __cli_run agy $argv
+            case copilot gh-copilot
+              __cli_run copilot $argv
+            case ''' -h --help help
+              echo $uso
+              return 0
+            case '*'
+              echo $uso >&2
+              return 1
+          end
+          functions -e __cli_run
         '';
       };
 
